@@ -9,7 +9,7 @@ import SearchButton from './search-button';
 
 export default function Header() {
   return (
-    <header className='bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b backdrop-blur'>
+    <header className='bg-background/95 supports-[backdrop-filter]:bg-background/60 overflow-hidden border-b backdrop-blur md:rounded-t-xl'>
       <div className='flex h-16 shrink-0 items-center gap-2'>
         {/* 左侧：侧边栏触发器 + 面包屑 */}
         <div className='flex min-w-0 flex-1 items-center gap-2 px-3 sm:px-4'>
