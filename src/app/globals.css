@@ -164,3 +164,21 @@
 .dark * {
   scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--background));
 }
+
+/* 渐变动画 */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+  background-size: 200% auto;
+}

@@ -80,9 +80,11 @@ export default function Home() {
     <div className='from-background via-background to-muted/50 flex min-h-screen flex-col bg-gradient-to-br'>
       {/* 背景装饰 */}
       <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-        <div className='bg-primary/5 absolute -top-40 -right-40 h-80 w-80 rounded-full blur-3xl' />
-        <div className='absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-blue-500/5 blur-3xl' />
-        <div className='absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-purple-500/3 blur-3xl' />
+        <div className='bg-primary/5 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl' />
+        <div className='absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full bg-blue-500/5 blur-3xl delay-1000' />
+        <div className='absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform animate-pulse rounded-full bg-purple-500/3 blur-3xl delay-500' />
+        {/* 新增网格背景 */}
+        <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]' />
       </div>
 
       {/* 导航栏 */}
@@ -93,25 +95,26 @@ export default function Home() {
         {/* 英雄区域 */}
         <div className='mx-auto mb-20 flex min-h-[calc(100vh-112px)] max-w-5xl flex-col justify-center text-center'>
           <div className='mb-8'>
-            <div className='bg-primary/10 border-primary/20 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium'>
-              <Zap size={16} />
-              <span>基于 Next.js 15 构建</span>
+            <div className='bg-primary/10 border-primary/20 text-primary animate-in fade-in slide-in-from-bottom-4 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium duration-700'>
+              <Zap size={16} className='animate-pulse' />
+              <span>基于 Next.js 16 & React 19 构建</span>
             </div>
           </div>
 
-          <h1 className='mb-8 text-5xl leading-tight font-bold tracking-tight sm:text-7xl'>
+          <h1 className='animate-in fade-in slide-in-from-bottom-8 mb-8 text-5xl leading-tight font-bold tracking-tight duration-1000 sm:text-7xl'>
             <span className='from-foreground via-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-transparent'>
               现代化的
             </span>
             <br />
-            <span className='from-primary bg-gradient-to-r via-blue-500 to-purple-500 bg-clip-text text-transparent'>
+            <span className='from-primary animate-gradient bg-gradient-to-r via-blue-500 to-purple-500 bg-[length:200%_auto] bg-clip-text text-transparent'>
               后台管理系统
             </span>
           </h1>
 
-          <p className='text-muted-foreground mx-auto mb-10 max-w-3xl text-xl leading-relaxed sm:text-2xl'>
+          <p className='text-muted-foreground animate-in fade-in slide-in-from-bottom-6 mx-auto mb-10 max-w-3xl text-xl leading-relaxed delay-200 duration-1000 sm:text-2xl'>
             基于{' '}
-            <span className='text-foreground font-semibold'>Next.js 15</span> 和{' '}
+            <span className='text-foreground font-semibold'>Next.js 16</span>、{' '}
+            <span className='text-foreground font-semibold'>React 19</span> 和{' '}
             <span className='text-foreground font-semibold'>Shadcn UI</span>{' '}
             构建的完整后台管理系统模板，
             <br className='hidden sm:block' />
@@ -119,16 +122,33 @@ export default function Home() {
             <span className='text-primary font-semibold'>企业级应用</span>
           </p>
 
-          <div className='mb-16 flex justify-center'>
+          <div className='animate-in fade-in slide-in-from-bottom-4 mb-16 flex flex-col items-center justify-center gap-4 delay-400 duration-1000 sm:flex-row'>
             <Button
               size='lg'
               asChild
-              className='hover:shadow-primary/25 px-8 py-6 text-lg shadow-2xl transition-all duration-300 hover:scale-105'
+              className='hover:shadow-primary/25 group px-8 py-6 text-lg shadow-2xl transition-all duration-300 hover:scale-105'
             >
               <a href='/dashboard' className='flex items-center gap-3'>
-                <Zap size={20} />
+                <Zap
+                  size={20}
+                  className='transition-transform duration-300 group-hover:rotate-12'
+                />
                 开始使用
-                <ArrowRight size={20} />
+                <ArrowRight
+                  size={20}
+                  className='transition-transform duration-300 group-hover:translate-x-1'
+                />
+              </a>
+            </Button>
+            <Button
+              size='lg'
+              variant='outline'
+              asChild
+              className='px-8 py-6 text-lg transition-all duration-300 hover:scale-105'
+            >
+              <a href='/login' className='flex items-center gap-3'>
+                <Shield size={20} />
+                立即登录
               </a>
             </Button>
           </div>
@@ -136,8 +156,8 @@ export default function Home() {
 
         {/* 特性展示 */}
         <div className='mx-auto max-w-7xl'>
-          <div className='mb-16 text-center'>
-            <h2 className='mb-4 text-3xl font-bold sm:text-4xl'>
+          <div className='animate-in fade-in slide-in-from-bottom-6 mb-16 text-center duration-1000'>
+            <h2 className='from-foreground to-foreground/70 mb-4 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
               为什么选择 {siteConfig.name}？
             </h2>
             <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>
@@ -151,7 +171,7 @@ export default function Home() {
                 icon: <Zap className='h-8 w-8 text-yellow-500' />,
                 title: '现代技术栈',
                 description:
-                  '采用 Next.js 15、React 19、TypeScript、Tailwind CSS 等最新技术，确保项目的先进性和可维护性',
+                  '采用 Next.js 16、React 19.2、TypeScript、Tailwind CSS 等最新技术，确保项目的先进性和可维护性',
                 gradient: 'from-yellow-500/10 to-orange-500/10'
               },
               {
@@ -192,13 +212,14 @@ export default function Home() {
             ].map((feature, index) => (
               <div
                 key={index}
-                className='group bg-card/50 relative overflow-hidden rounded-2xl border p-8 backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl'
+                className='group bg-card/50 animate-in fade-in slide-in-from-bottom-4 relative overflow-hidden rounded-2xl border p-8 backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl'
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
                 />
                 <div className='relative z-10'>
-                  <div className='bg-background/80 mb-4 inline-flex rounded-xl border p-3'>
+                  <div className='bg-background/80 mb-4 inline-flex rounded-xl border p-3 transition-transform duration-300 group-hover:scale-110'>
                     {feature.icon}
                   </div>
                   <h3 className='group-hover:text-primary mb-3 text-xl font-semibold transition-colors duration-300'>
@@ -214,11 +235,13 @@ export default function Home() {
         </div>
 
         {/* CTA 区域 */}
-        <div className='mx-auto max-w-4xl text-center'>
-          <div className='from-primary/10 border-primary/20 relative rounded-3xl border bg-gradient-to-r via-blue-500/10 to-purple-500/10 p-12 backdrop-blur-sm'>
-            <div className='from-primary/5 absolute inset-0 rounded-3xl bg-gradient-to-r to-purple-500/5' />
+        <div className='animate-in fade-in slide-in-from-bottom-8 mx-auto max-w-4xl text-center duration-1000'>
+          <div className='from-primary/10 border-primary/20 group relative overflow-hidden rounded-3xl border bg-gradient-to-r via-blue-500/10 to-purple-500/10 p-12 backdrop-blur-sm'>
+            <div className='from-primary/5 absolute inset-0 rounded-3xl bg-gradient-to-r to-purple-500/5 transition-opacity duration-500 group-hover:opacity-80' />
+            {/* 添加光效动画 */}
+            <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full' />
             <div className='relative z-10'>
-              <h2 className='mb-4 text-3xl font-bold sm:text-4xl'>
+              <h2 className='from-foreground to-foreground/70 mb-4 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
                 准备好开始了吗？
               </h2>
               <p className='text-muted-foreground mx-auto mb-8 max-w-2xl text-xl'>
@@ -228,19 +251,25 @@ export default function Home() {
                 <Button
                   size='lg'
                   asChild
-                  className='px-8 py-6 text-lg shadow-xl transition-all duration-300 hover:shadow-2xl'
+                  className='group px-8 py-6 text-lg shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl'
                 >
                   <a href='/login' className='flex items-center gap-3'>
-                    <Shield size={20} />
+                    <Shield
+                      size={20}
+                      className='transition-transform duration-300 group-hover:rotate-12'
+                    />
                     立即登录
-                    <ArrowRight size={20} />
+                    <ArrowRight
+                      size={20}
+                      className='transition-transform duration-300 group-hover:translate-x-1'
+                    />
                   </a>
                 </Button>
                 <Button
                   size='lg'
                   variant='outline'
                   asChild
-                  className='hover:bg-background/80 px-8 py-6 text-lg transition-all duration-300'
+                  className='hover:bg-background/80 px-8 py-6 text-lg transition-all duration-300 hover:scale-105'
                 >
                   <a
                     href='https://blog.guizimo.com'
