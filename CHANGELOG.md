@@ -4,6 +4,26 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [0.2.0](https://github.com/guizimo/n-admin/compare/v0.1.0...v0.2.0) (2026-06-17)
+
+
+### 🐛 Bug 修复
+
+* 更新头部组件样式，增加圆角和溢出隐藏 fixed [#5](https://github.com/guizimo/n-admin/issues/5) ([cc85e7c](https://github.com/guizimo/n-admin/commit/cc85e7ccbb32943ab156a62adec87175db3b95a0))
+
+
+### 🔨 其他修改
+
+* improve auth secret handling and tooling ([cc8c844](https://github.com/guizimo/n-admin/commit/cc8c844d6b750217994ac2ad9597f9b8c81204d2))
+* update dependencies and configuration ([efe9a87](https://github.com/guizimo/n-admin/commit/efe9a8738fd7c94e0f6e8eab85e433929432f72d))
+
+
+### ✨ 新增功能
+
+* add AI insights analysis API ([4d07a0e](https://github.com/guizimo/n-admin/commit/4d07a0e12a0a2067c5cf71678f9ff2817cd6fab6))
+* surface AI assistant insights on dashboard ([daee3de](https://github.com/guizimo/n-admin/commit/daee3de2166124ab4199090a37122670197ab830))
+* 添加渐变动画和背景网格效果 ([617cddd](https://github.com/guizimo/n-admin/commit/617cdddcfbef77fc55fc34870a2f018d48e79f32))
+
 ## [0.1.0](https://github.com/guizimo/n-admin/compare/v0.0.13...v0.1.0) (2025-07-31)
 
 
