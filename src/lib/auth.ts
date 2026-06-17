@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
+import { getJwtSecret } from '@/lib/jwt';
 
 export interface User {
   id: number;
@@ -25,10 +26,7 @@ export async function auth(): Promise<Session | null> {
   }
 
   try {
-    const verified = verify(
-      token.value,
-      process.env.JWT_SECRET || 'secret'
-    ) as User;
+    const verified = verify(token.value, getJwtSecret()) as User;
     return {
       user: {
         id: verified.id,
@@ -48,7 +46,7 @@ export async function auth(): Promise<Session | null> {
  */
 export function verifyToken(token: string): User | null {
   try {
-    const verified = verify(token, process.env.JWT_SECRET || 'secret') as User;
+    const verified = verify(token, getJwtSecret()) as User;
     return {
       id: verified.id,
       email: verified.email,

@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { logger } from '@/lib/logger';
+import { getJwtSecret } from '@/lib/jwt';
 import {
   successResponse,
   errorResponse,
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
         avatar: user[0].avatar,
         isSurperAdmin: user[0].isSuperAdmin
       },
-      process.env.JWT_SECRET || 'secret',
+      getJwtSecret(),
       { expiresIn: '1d' }
     );
 

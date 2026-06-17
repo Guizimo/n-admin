@@ -1,6 +1,6 @@
 import { successResponse } from '@/service/response';
-import { verify } from 'jsonwebtoken';
 import { logger } from '@/lib/logger';
+import { verifyToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -10,15 +10,10 @@ export async function POST(request: Request) {
     let username: string | undefined;
 
     if (token) {
-      try {
-        const decoded = verify(
-          token,
-          process.env.JWT_SECRET || 'secret'
-        ) as any;
+      const decoded = verifyToken(token);
+      if (decoded) {
         userId = decoded.id;
         username = decoded.username;
-      } catch (error) {
-        // Token无效，但仍然允许登出
       }
     }
 

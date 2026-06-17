@@ -20,23 +20,6 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
-// 防抖 Hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
 // 筛选字段类型定义
 export interface FilterOption {
   label: string;
@@ -66,19 +49,29 @@ export function SearchFilter({
   debounceDelay = 500
 }: SearchFilterProps) {
   // 每个字段单独管理状态和防抖
-  const [textInputs, setTextInputs] = useState<Record<string, string>>({});
+  const [textInputs, setTextInputs] = useState<Record<string, string>>(() =>
+    fields.reduce(
+      (acc, field) => {
+        if (field.type === 'text') {
+          acc[field.key] = values[field.key] || '';
+        }
+
+        return acc;
+      },
+      {} as Record<string, string>
+    )
+  );
   const timeoutRefs = useRef<Record<string, NodeJS.Timeout>>({});
 
-  // 初始化文本输入状态
   useEffect(() => {
-    const initialTextInputs: Record<string, string> = {};
-    fields.forEach((field) => {
-      if (field.type === 'text') {
-        initialTextInputs[field.key] = values[field.key] || '';
-      }
-    });
-    setTextInputs(initialTextInputs);
-  }, [fields, values]);
+    const pendingTimeouts = timeoutRefs.current;
+
+    return () => {
+      Object.values(pendingTimeouts).forEach((timeout) => {
+        if (timeout) clearTimeout(timeout);
+      });
+    };
+  }, []);
 
   const handleTextChange = useCallback(
     (key: string, value: string) => {
@@ -108,9 +101,7 @@ export function SearchFilter({
 
   const handleDateRangeChange = useCallback(
     (key: string, dateRange: any) => {
-      console.log('handleDateRangeChange:', { key, dateRange, values });
       const newValues = { ...values, [key]: dateRange };
-      console.log('New values after date change:', newValues);
       onValuesChange(newValues);
     },
     [values, onValuesChange]
@@ -220,10 +211,9 @@ export function SearchFilter({
                 <CalendarComponent
                   mode='range'
                   selected={dateValue}
-                  onSelect={(dateRange) => {
-                    console.log('Calendar onSelect:', dateRange);
-                    handleDateRangeChange(field.key, dateRange);
-                  }}
+                  onSelect={(dateRange) =>
+                    handleDateRangeChange(field.key, dateRange)
+                  }
                   numberOfMonths={2}
                   locale={zhCN}
                 />
