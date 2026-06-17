@@ -22,8 +22,11 @@ import { formatDateTime } from '@/components/table/utils';
 import { PageHeader } from '@/components/table/page-header';
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { DashboardAPI } from '@/service/request';
+import { AiAPI } from '@/service/request';
 import { toast } from 'sonner';
 import { DashboardSkeleton } from '@/components/ui/dashboard-skeleton';
+import { AiInsightsPanel } from '@/components/dashboard/ai-insights-panel';
+import type { AiInsightsPayload } from '@/types/ai';
 
 interface DashboardStats {
   overview: {
@@ -59,6 +62,8 @@ export default function DashboardOverview() {
   const { session } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [aiInsights, setAiInsights] = useState<AiInsightsPayload | null>(null);
+  const [aiLoading, setAiLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('7d');
   const [isChangingRange, setIsChangingRange] = useState(false);
 
@@ -86,8 +91,26 @@ export default function DashboardOverview() {
     }
   };
 
+  const fetchAiInsights = async () => {
+    try {
+      setAiLoading(true);
+      const res = await AiAPI.getInsights();
+      if (res.code === 0) {
+        setAiInsights(res.data);
+      } else {
+        toast.error(res.message || '获取智能洞察失败');
+      }
+    } catch (error) {
+      console.error('获取智能洞察失败:', error);
+      toast.error('智能洞察请求失败，请检查网络连接');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchStats();
+    fetchAiInsights();
   }, []);
 
   // 处理时间范围改变
@@ -284,6 +307,12 @@ export default function DashboardOverview() {
             </CardContent>
           </Card>
         </div>
+
+        <AiInsightsPanel
+          data={aiInsights}
+          loading={aiLoading}
+          onRefresh={fetchAiInsights}
+        />
 
         {/* 主图表区域 */}
         <div className='w-full'>
