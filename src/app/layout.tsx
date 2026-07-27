@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -7,19 +6,15 @@ import { auth } from '@/lib/auth';
 import Providers from '@/contexts/providers';
 import { siteConfig } from '@/config/site';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
-});
-
 export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description
+  title: `${siteConfig.name} - 让后台先理解，再执行`,
+  description: siteConfig.description,
+  keywords: ['AI Native', '管理后台', 'RBAC', 'Next.js', '开源'],
+  openGraph: {
+    title: `${siteConfig.name} - AI Native 管理操作系统`,
+    description: siteConfig.description,
+    type: 'website'
+  }
 };
 
 export default async function RootLayout({
@@ -29,10 +24,8 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang='zh-CN' suppressHydrationWarning>
+      <body className='antialiased'>
         <NuqsAdapter>
           <Providers session={session}>
             <Toaster />

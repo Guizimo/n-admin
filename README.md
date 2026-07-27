@@ -3,9 +3,9 @@
   
   # N Admin
   
-  基于 Next.js 15 构建的现代化后台管理系统。
+  可解释、可审计、可执行的 AI Native 管理操作系统。
   
-  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+  [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
   [![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
@@ -14,7 +14,8 @@
 
 ## 特性
 
-- **现代框架**: Next.js 15 + React 19 + TypeScript
+- **AI 洞察**: 基于用户、权限与操作日志生成结构化风险建议
+- **现代框架**: Next.js 16 + React 19 + TypeScript
 - **UI组件**: Tailwind CSS + Shadcn UI
 - **权限系统**: 基于 RBAC 的完整权限控制
 - **数据库**: Drizzle ORM + PostgreSQL/MySQL
@@ -28,6 +29,7 @@
 - 🛡️ 角色权限 - 细粒度权限控制
 - 📊 数据看板 - 图表可视化
 - 📝 系统日志 - 操作记录追踪
+- ✨ AI 洞察 - 风险识别、证据说明与处置建议
 - ⚙️ 系统设置 - 个性化配置
 
 ## 快速开始
@@ -104,7 +106,7 @@ pnpm init:admin   # 初始化管理员
 
 ### 前端
 
-- **框架**: Next.js 15 (App Router)
+- **框架**: Next.js 16 (App Router)
 - **UI**: React 19 + TypeScript
 - **样式**: Tailwind CSS + Shadcn UI
 - **状态**: React Hooks + Context

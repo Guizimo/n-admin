@@ -1,332 +1,559 @@
 'use client';
 
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
+  Activity,
   ArrowRight,
-  Shield,
-  Zap,
-  Palette,
+  Bot,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  CircleDot,
+  Github,
+  Menu,
+  ScanSearch,
+  ShieldCheck,
+  Sparkles,
   Users,
-  BarChart3,
-  Code2
+  Workflow,
+  X
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { siteConfig } from '@/config/site';
 
-export default function Home() {
-  // 滚动监听组件
-  function ScrollNavbar() {
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-      const onScroll = () => setScrolled(window.scrollY > 10);
-      window.addEventListener('scroll', onScroll);
-      return () => window.removeEventListener('scroll', onScroll);
-    }, []);
-
-    return (
-      <nav className='fixed top-0 left-0 z-30 w-full transition-all duration-300'>
-        <div className='container mx-auto px-4 py-4'>
-          <div
-            className={`flex items-center justify-between rounded-full px-6 py-3 transition-all duration-300 ${
-              scrolled
-                ? 'bg-background/95 border-border/50 border shadow-lg backdrop-blur-md'
-                : 'bg-background/80 border-border/30 border shadow-sm backdrop-blur-sm'
-            }`}
-          >
-            {/* Logo 部分 */}
-            <div className='flex items-center gap-3'>
-              <div className='relative'>
-                <div className='bg-primary/10 absolute inset-0 rounded-lg blur-sm' />
-                <div className='bg-background relative rounded-lg p-2'>
-                  <Image
-                    src='/logo.png'
-                    alt='N-Admin Logo'
-                    width={24}
-                    height={24}
-                    className='dark:invert'
-                  />
-                </div>
-              </div>
-              <span className='from-foreground to-foreground/80 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent'>
-                {siteConfig.name}
-              </span>
-            </div>
-
-            {/* 右侧操作按钮 */}
-            <div className='flex items-center gap-2'>
-              {/* 立即使用按钮 - 更现代的设计 */}
-              <Button
-                asChild
-                size='sm'
-                className='from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 rounded-full border-0 bg-gradient-to-r shadow-md transition-all duration-200 hover:shadow-lg'
-              >
-                <a href='/dashboard' className='flex items-center gap-2 px-4'>
-                  <span className='text-primary-foreground text-sm font-medium'>
-                    立即使用
-                  </span>
-                  <ArrowRight size={14} className='text-primary-foreground' />
-                </a>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
+const productSignals = [
+  {
+    icon: ScanSearch,
+    eyebrow: '看见异常',
+    title: '主动发现，而不只是展示',
+    description:
+      'AI 持续分析用户、权限与操作日志，在风险变成事故前给出可追溯的判断。',
+    accent: 'text-[#007d6e]',
+    marker: 'bg-[#32d6b4]'
+  },
+  {
+    icon: ShieldCheck,
+    eyebrow: '解释依据',
+    title: '每条结论都带证据',
+    description:
+      '从洞察回到原始记录，清楚知道发生了什么、为什么重要，以及谁会受到影响。',
+    accent: 'text-[#b83d2e]',
+    marker: 'bg-[#ff725e]'
+  },
+  {
+    icon: Workflow,
+    eyebrow: '安全行动',
+    title: '把建议变成受控执行',
+    description:
+      '高风险操作先生成草案，通过权限校验、人工确认与审计记录后再执行。',
+    accent: 'text-[#765900]',
+    marker: 'bg-[#f2c94c]'
   }
+];
 
+const flow = [
+  { step: '01', title: '理解上下文', detail: '角色、权限、日志与业务状态' },
+  { step: '02', title: '形成判断', detail: '结论、置信度与证据引用' },
+  { step: '03', title: '生成方案', detail: '影响范围与可回退的操作草案' },
+  { step: '04', title: '受控执行', detail: '确认、授权、执行与完整审计' }
+];
+
+function ProductPreview() {
   return (
-    <div className='from-background via-background to-muted/50 flex min-h-screen flex-col bg-gradient-to-br'>
-      {/* 背景装饰 */}
-      <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-        <div className='bg-primary/5 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl' />
-        <div className='absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full bg-blue-500/5 blur-3xl delay-1000' />
-        <div className='absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform animate-pulse rounded-full bg-purple-500/3 blur-3xl delay-500' />
-        {/* 新增网格背景 */}
-        <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]' />
+    <div className='relative mx-auto h-[150px] w-full max-w-[1180px] overflow-hidden border-x border-t border-white/15 bg-[#111416] shadow-[0_-40px_100px_rgba(50,214,180,0.08)] sm:h-[220px] lg:h-[260px]'>
+      <div className='flex h-12 items-center justify-between border-b border-white/10 px-4 sm:px-5'>
+        <div className='flex items-center gap-2'>
+          <span className='h-2.5 w-2.5 rounded-full bg-[#ff725e]' />
+          <span className='h-2.5 w-2.5 rounded-full bg-[#f2c94c]' />
+          <span className='h-2.5 w-2.5 rounded-full bg-[#32d6b4]' />
+        </div>
+        <div className='hidden items-center gap-2 text-xs text-white/45 sm:flex'>
+          <CircleDot className='h-3.5 w-3.5 text-[#32d6b4]' />
+          系统运行正常
+        </div>
       </div>
 
-      {/* 导航栏 */}
-      <ScrollNavbar />
+      <div className='grid h-[calc(100%-3rem)] grid-cols-[58px_1fr] sm:grid-cols-[180px_1fr]'>
+        <aside className='border-r border-white/10 p-3 sm:p-4'>
+          <div className='mb-7 flex items-center gap-2'>
+            <Image src='/logo.png' alt='' width={28} height={28} />
+            <span className='hidden text-sm font-semibold text-white sm:block'>
+              N Admin
+            </span>
+          </div>
+          <div className='space-y-2'>
+            {[
+              ['概览', Activity],
+              ['用户', Users],
+              ['AI 助手', Sparkles],
+              ['权限', ShieldCheck]
+            ].map(([label, Icon], index) => {
+              const NavIcon = Icon as typeof Activity;
+              return (
+                <div
+                  key={label as string}
+                  className={`flex h-9 items-center gap-2 px-2 text-xs ${
+                    index === 2 ? 'bg-white text-[#111416]' : 'text-white/45'
+                  }`}
+                >
+                  <NavIcon className='h-4 w-4 shrink-0' />
+                  <span className='hidden sm:block'>{label as string}</span>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
 
-      {/* 主要内容 */}
-      <main className='relative z-10 container mx-auto flex flex-1 flex-col justify-center px-4 pt-28'>
-        {/* 英雄区域 */}
-        <div className='mx-auto mb-20 flex min-h-[calc(100vh-112px)] max-w-5xl flex-col justify-center text-center'>
-          <div className='mb-8'>
-            <div className='bg-primary/10 border-primary/20 text-primary animate-in fade-in slide-in-from-bottom-4 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium duration-700'>
-              <Zap size={16} className='animate-pulse' />
-              <span>基于 Next.js 16 & React 19 构建</span>
+        <div className='min-w-0 p-4 text-left sm:p-6 lg:p-8'>
+          <div className='mb-6 flex items-start justify-between gap-4'>
+            <div>
+              <p className='mb-1 text-[10px] font-semibold tracking-[0.18em] text-[#32d6b4] uppercase sm:text-xs'>
+                AI Operations Center
+              </p>
+              <h2 className='text-xl font-semibold text-white sm:text-2xl'>
+                早上好，Guizimo
+              </h2>
+            </div>
+            <div className='flex h-9 w-9 items-center justify-center border border-white/15 bg-white/5'>
+              <Bot className='h-4 w-4 text-white/70' />
             </div>
           </div>
 
-          <h1 className='animate-in fade-in slide-in-from-bottom-8 mb-8 text-5xl leading-tight font-bold tracking-tight duration-1000 sm:text-7xl'>
-            <span className='from-foreground via-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-transparent'>
-              现代化的
-            </span>
-            <br />
-            <span className='from-primary animate-gradient bg-gradient-to-r via-blue-500 to-purple-500 bg-[length:200%_auto] bg-clip-text text-transparent'>
-              后台管理系统
-            </span>
-          </h1>
-
-          <p className='text-muted-foreground animate-in fade-in slide-in-from-bottom-6 mx-auto mb-10 max-w-3xl text-xl leading-relaxed delay-200 duration-1000 sm:text-2xl'>
-            基于{' '}
-            <span className='text-foreground font-semibold'>Next.js 16</span>、{' '}
-            <span className='text-foreground font-semibold'>React 19</span> 和{' '}
-            <span className='text-foreground font-semibold'>Shadcn UI</span>{' '}
-            构建的完整后台管理系统模板，
-            <br className='hidden sm:block' />
-            帮助你快速搭建{' '}
-            <span className='text-primary font-semibold'>企业级应用</span>
-          </p>
-
-          <div className='animate-in fade-in slide-in-from-bottom-4 mb-16 flex flex-col items-center justify-center gap-4 delay-400 duration-1000 sm:flex-row'>
-            <Button
-              size='lg'
-              asChild
-              className='hover:shadow-primary/25 group px-8 py-6 text-lg shadow-2xl transition-all duration-300 hover:scale-105'
-            >
-              <a href='/dashboard' className='flex items-center gap-3'>
-                <Zap
-                  size={20}
-                  className='transition-transform duration-300 group-hover:rotate-12'
-                />
-                开始使用
-                <ArrowRight
-                  size={20}
-                  className='transition-transform duration-300 group-hover:translate-x-1'
-                />
-              </a>
-            </Button>
-            <Button
-              size='lg'
-              variant='outline'
-              asChild
-              className='px-8 py-6 text-lg transition-all duration-300 hover:scale-105'
-            >
-              <a href='/login' className='flex items-center gap-3'>
-                <Shield size={20} />
-                立即登录
-              </a>
-            </Button>
-          </div>
-        </div>
-
-        {/* 特性展示 */}
-        <div className='mx-auto max-w-7xl'>
-          <div className='animate-in fade-in slide-in-from-bottom-6 mb-16 text-center duration-1000'>
-            <h2 className='from-foreground to-foreground/70 mb-4 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
-              为什么选择 {siteConfig.name}？
-            </h2>
-            <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>
-              集成最新技术栈，提供完整的解决方案，让你专注于业务逻辑
-            </p>
-          </div>
-
-          <div className='mb-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-3'>
+          <div className='mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3'>
             {[
-              {
-                icon: <Zap className='h-8 w-8 text-yellow-500' />,
-                title: '现代技术栈',
-                description:
-                  '采用 Next.js 16、React 19.2、TypeScript、Tailwind CSS 等最新技术，确保项目的先进性和可维护性',
-                gradient: 'from-yellow-500/10 to-orange-500/10'
-              },
-              {
-                icon: <Shield className='h-8 w-8 text-green-500' />,
-                title: '完整的权限系统',
-                description:
-                  '内置用户认证、角色管理、权限控制等企业级功能，开箱即用的安全解决方案',
-                gradient: 'from-green-500/10 to-emerald-500/10'
-              },
-              {
-                icon: <Palette className='h-8 w-8 text-purple-500' />,
-                title: '优雅的设计',
-                description:
-                  '基于 Shadcn UI 和 Radix UI 构建，支持亮色/暗色主题，提供一致的设计体验',
-                gradient: 'from-purple-500/10 to-pink-500/10'
-              },
-              {
-                icon: <Users className='h-8 w-8 text-blue-500' />,
-                title: '用户管理',
-                description:
-                  '完整的用户管理功能，包括用户创建、编辑、删除、角色分配等操作',
-                gradient: 'from-blue-500/10 to-cyan-500/10'
-              },
-              {
-                icon: <BarChart3 className='h-8 w-8 text-red-500' />,
-                title: '数据可视化',
-                description:
-                  '内置图表组件，支持多种图表类型，让数据展示更加直观和美观',
-                gradient: 'from-red-500/10 to-rose-500/10'
-              },
-              {
-                icon: <Code2 className='h-8 w-8 text-indigo-500' />,
-                title: '开发友好',
-                description:
-                  '完整的 TypeScript 支持，规范的代码结构，详细的文档，提升开发效率',
-                gradient: 'from-indigo-500/10 to-violet-500/10'
-              }
-            ].map((feature, index) => (
+              ['活跃用户', '1,284', '+12%'],
+              ['角色', '18', '稳定'],
+              ['待审查', '07', '需关注'],
+              ['风险事件', '03', '-2']
+            ].map(([label, value, change], index) => (
               <div
-                key={index}
-                className='group bg-card/50 animate-in fade-in slide-in-from-bottom-4 relative overflow-hidden rounded-2xl border p-8 backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl'
-                style={{ animationDelay: `${index * 100}ms` }}
+                key={label}
+                className='border border-white/10 bg-white/[0.035] p-3'
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
-                />
-                <div className='relative z-10'>
-                  <div className='bg-background/80 mb-4 inline-flex rounded-xl border p-3 transition-transform duration-300 group-hover:scale-110'>
-                    {feature.icon}
-                  </div>
-                  <h3 className='group-hover:text-primary mb-3 text-xl font-semibold transition-colors duration-300'>
-                    {feature.title}
-                  </h3>
-                  <p className='text-muted-foreground leading-relaxed'>
-                    {feature.description}
-                  </p>
+                <p className='truncate text-[10px] text-white/40 sm:text-xs'>
+                  {label}
+                </p>
+                <div className='mt-2 flex items-end justify-between gap-1'>
+                  <span className='text-lg font-semibold text-white sm:text-xl'>
+                    {value}
+                  </span>
+                  <span
+                    className={`hidden text-[10px] sm:block ${
+                      index === 2 ? 'text-[#ff725e]' : 'text-[#32d6b4]'
+                    }`}
+                  >
+                    {change}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* CTA 区域 */}
-        <div className='animate-in fade-in slide-in-from-bottom-8 mx-auto max-w-4xl text-center duration-1000'>
-          <div className='from-primary/10 border-primary/20 group relative overflow-hidden rounded-3xl border bg-gradient-to-r via-blue-500/10 to-purple-500/10 p-12 backdrop-blur-sm'>
-            <div className='from-primary/5 absolute inset-0 rounded-3xl bg-gradient-to-r to-purple-500/5 transition-opacity duration-500 group-hover:opacity-80' />
-            {/* 添加光效动画 */}
-            <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full' />
-            <div className='relative z-10'>
-              <h2 className='from-foreground to-foreground/70 mb-4 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
-                准备好开始了吗？
-              </h2>
-              <p className='text-muted-foreground mx-auto mb-8 max-w-2xl text-xl'>
-                只需几分钟即可搭建完整的后台管理系统，立即体验现代化的开发流程
-              </p>
-              <div className='flex flex-col justify-center gap-4 sm:flex-row'>
-                <Button
-                  size='lg'
-                  asChild
-                  className='group px-8 py-6 text-lg shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl'
-                >
-                  <a href='/login' className='flex items-center gap-3'>
-                    <Shield
-                      size={20}
-                      className='transition-transform duration-300 group-hover:rotate-12'
-                    />
-                    立即登录
-                    <ArrowRight
-                      size={20}
-                      className='transition-transform duration-300 group-hover:translate-x-1'
-                    />
-                  </a>
-                </Button>
-                <Button
-                  size='lg'
-                  variant='outline'
-                  asChild
-                  className='hover:bg-background/80 px-8 py-6 text-lg transition-all duration-300 hover:scale-105'
-                >
-                  <a
-                    href='https://blog.guizimo.com'
-                    target='_blank'
-                    className='flex items-center gap-3'
-                  >
-                    了解更多
-                  </a>
-                </Button>
+          <div className='grid gap-3 lg:grid-cols-[1.08fr_0.92fr]'>
+            <div className='border border-white/10 bg-white/[0.035] p-4 sm:p-5'>
+              <div className='mb-4 flex items-center justify-between'>
+                <div className='flex items-center gap-2 text-sm font-medium text-white'>
+                  <Sparkles className='h-4 w-4 text-[#f2c94c]' />
+                  今日洞察
+                </div>
+                <span className='text-[10px] text-white/35'>刚刚更新</span>
+              </div>
+              <div className='space-y-3'>
+                <div className='border-l-2 border-[#ff725e] bg-[#ff725e]/5 px-3 py-3'>
+                  <div className='mb-1 flex items-center justify-between gap-3'>
+                    <p className='truncate text-xs font-medium text-white sm:text-sm'>
+                      发现 3 个长期未使用的高权限账号
+                    </p>
+                    <span className='text-[9px] text-[#ff9b8d]'>高优先级</span>
+                  </div>
+                  <p className='line-clamp-2 text-[10px] leading-4 text-white/40 sm:text-xs'>
+                    过去 90 天无登录记录，但仍持有用户删除与角色配置权限。
+                  </p>
+                </div>
+                <div className='border-l-2 border-[#f2c94c] bg-[#f2c94c]/5 px-3 py-3'>
+                  <p className='mb-1 truncate text-xs font-medium text-white sm:text-sm'>
+                    财务角色存在权限重叠
+                  </p>
+                  <p className='line-clamp-2 text-[10px] leading-4 text-white/40 sm:text-xs'>
+                    建议合并 2 条重复策略，可减少后续维护成本。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className='hidden border border-white/10 bg-white/[0.035] p-5 lg:block'>
+              <div className='mb-5 flex items-center justify-between'>
+                <p className='text-sm font-medium text-white'>权限健康度</p>
+                <span className='text-xs text-[#32d6b4]'>良好</span>
+              </div>
+              <div className='mb-5 flex items-end gap-3'>
+                <span className='text-4xl font-semibold text-white'>86</span>
+                <span className='pb-1 text-xs text-white/35'>/ 100</span>
+              </div>
+              <div className='mb-6 h-1.5 overflow-hidden bg-white/10'>
+                <div className='h-full w-[86%] bg-[#32d6b4]' />
+              </div>
+              <div className='space-y-3 text-xs'>
+                {['权限边界清晰', '关键操作已审计', '3 项建议待处理'].map(
+                  (item, index) => (
+                    <div
+                      key={item}
+                      className='flex items-center gap-2 text-white/50'
+                    >
+                      {index < 2 ? (
+                        <CheckCircle2 className='h-3.5 w-3.5 text-[#32d6b4]' />
+                      ) : (
+                        <CircleDot className='h-3.5 w-3.5 text-[#f2c94c]' />
+                      )}
+                      {item}
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
+    </div>
+  );
+}
 
-      {/* 页脚 */}
-      <footer className='relative z-10 container mx-auto mt-20 px-4 py-8'>
-        <div className='border-border/50 border-t pt-8'>
-          <div className='flex flex-col items-center justify-between gap-4 sm:flex-row'>
-            <div className='flex items-center gap-4'>
-              <div className='flex items-center gap-2'>
-                <Image
-                  src='/logo.png'
-                  alt='N-Admin Logo'
-                  width={24}
-                  height={24}
-                  className='dark:invert'
-                />
-                <span className='font-semibold'>{siteConfig.name}</span>
+export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <div className='min-h-screen overflow-x-hidden bg-[#f5f6f2] text-[#171a1b]'>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200 ${
+          scrolled
+            ? 'border-black/10 bg-[#f5f6f2]/95 backdrop-blur-md'
+            : 'border-transparent bg-transparent'
+        }`}
+      >
+        <div className='mx-auto flex h-16 max-w-[1280px] items-center justify-between px-5 sm:px-8'>
+          <Link
+            href='/'
+            className='flex items-center gap-2.5'
+            aria-label='N Admin 首页'
+          >
+            <Image src='/logo.png' alt='' width={30} height={30} priority />
+            <span className='text-sm font-semibold tracking-wide'>
+              {siteConfig.name}
+            </span>
+          </Link>
+
+          <nav className='hidden items-center gap-8 text-sm text-black/55 md:flex'>
+            <a href='#product' className='transition-colors hover:text-black'>
+              产品
+            </a>
+            <a href='#workflow' className='transition-colors hover:text-black'>
+              工作方式
+            </a>
+            <a
+              href='#open-source'
+              className='transition-colors hover:text-black'
+            >
+              开源
+            </a>
+          </nav>
+
+          <div className='hidden items-center gap-2 md:flex'>
+            <a
+              href='https://github.com/guizimo/n-admin'
+              target='_blank'
+              rel='noreferrer'
+              className='inline-flex h-9 items-center gap-2 px-3 text-sm text-black/55 transition-colors hover:text-black'
+            >
+              <Github className='h-4 w-4' />
+              GitHub
+            </a>
+            <Link
+              href='/login'
+              className='inline-flex h-9 items-center gap-2 bg-[#171a1b] px-4 text-sm font-medium text-white transition-colors hover:bg-black'
+            >
+              进入系统
+              <ArrowRight className='h-4 w-4' />
+            </Link>
+          </div>
+
+          <button
+            type='button'
+            onClick={() => setMenuOpen((open) => !open)}
+            className='flex h-9 w-9 items-center justify-center border border-black/15 md:hidden'
+            aria-label={menuOpen ? '关闭菜单' : '打开菜单'}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? (
+              <X className='h-4 w-4' />
+            ) : (
+              <Menu className='h-4 w-4' />
+            )}
+          </button>
+        </div>
+
+        {menuOpen && (
+          <div className='border-t border-black/10 bg-[#f5f6f2] px-5 py-5 md:hidden'>
+            <nav className='flex flex-col gap-4 text-sm'>
+              <a href='#product' onClick={() => setMenuOpen(false)}>
+                产品
+              </a>
+              <a href='#workflow' onClick={() => setMenuOpen(false)}>
+                工作方式
+              </a>
+              <a href='#open-source' onClick={() => setMenuOpen(false)}>
+                开源
+              </a>
+              <Link
+                href='/login'
+                className='mt-2 inline-flex h-10 items-center justify-center gap-2 bg-[#171a1b] px-4 font-medium text-white'
+              >
+                进入系统 <ArrowRight className='h-4 w-4' />
+              </Link>
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <main>
+        <section className='relative flex flex-col overflow-hidden bg-[#f5f6f2] pt-16'>
+          <div className='pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(23,26,27,0.055)_1px,transparent_1px),linear-gradient(to_bottom,rgba(23,26,27,0.055)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]' />
+          <div className='relative z-10 mx-auto flex w-full max-w-[1040px] flex-col items-center justify-center px-5 pt-12 pb-10 text-center sm:px-8 sm:pt-16'>
+            <div className='mb-7 inline-flex items-center gap-2 border border-black/15 bg-white/60 px-3 py-1.5 text-xs font-medium text-black/65'>
+              <Sparkles className='h-3.5 w-3.5 text-[#007d6e]' />
+              AI Native 管理操作系统
+            </div>
+            <h1 className='max-w-4xl text-[clamp(3rem,8vw,7.25rem)] leading-[0.92] font-semibold tracking-[0] text-[#171a1b]'>
+              N Admin
+            </h1>
+            <p className='mt-5 max-w-3xl text-[clamp(1.8rem,4.5vw,4.25rem)] leading-[1.05] font-medium tracking-[0] text-black/78'>
+              让后台先理解，再执行
+            </p>
+            <p className='mt-6 max-w-2xl text-base leading-7 text-black/55 sm:text-lg'>
+              把用户、权限和操作日志变成有证据的洞察，
+              <br className='hidden sm:block' />
+              再通过授权、确认与审计，把建议安全地变成行动。
+            </p>
+            <div className='mt-8 flex flex-col items-center gap-3 sm:flex-row'>
+              <Link
+                href='/login'
+                className='inline-flex h-12 min-w-40 items-center justify-center gap-2 bg-[#171a1b] px-5 text-sm font-medium text-white transition-transform hover:-translate-y-0.5'
+              >
+                体验 N Admin
+                <ArrowRight className='h-4 w-4' />
+              </Link>
+              <a
+                href='#product'
+                className='inline-flex h-12 min-w-40 items-center justify-center gap-2 border border-black/20 bg-white/50 px-5 text-sm font-medium transition-colors hover:bg-white'
+              >
+                看产品如何工作
+                <ChevronRight className='h-4 w-4' />
+              </a>
+            </div>
+          </div>
+          <div className='relative z-10 px-3 sm:px-8'>
+            <ProductPreview />
+          </div>
+        </section>
+
+        <section id='product' className='border-t border-black/10 bg-white'>
+          <div className='mx-auto max-w-[1280px] px-5 py-24 sm:px-8 sm:py-32'>
+            <div className='grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24'>
+              <div>
+                <p className='mb-4 text-xs font-semibold tracking-[0.18em] text-[#007d6e] uppercase'>
+                  Built for decisions
+                </p>
+                <h2 className='max-w-xl text-4xl leading-tight font-semibold tracking-[0] sm:text-5xl'>
+                  不是另一个
+                  <br />
+                  等待点击的后台
+                </h2>
               </div>
-              <p className='text-muted-foreground text-sm'>
-                © 2025 All rights reserved.
+              <div className='flex items-end'>
+                <p className='max-w-2xl text-lg leading-8 text-black/55 sm:text-xl'>
+                  传统后台把数据留给人去寻找。N Admin
+                  主动理解系统正在发生什么，给出判断依据，并把每一次行动约束在可控边界内。
+                </p>
+              </div>
+            </div>
+
+            <div className='mt-20 grid border-y border-black/10 md:grid-cols-3'>
+              {productSignals.map((signal, index) => {
+                const Icon = signal.icon;
+                return (
+                  <article
+                    key={signal.title}
+                    className={`py-10 md:px-8 md:py-12 ${
+                      index > 0
+                        ? 'border-t border-black/10 md:border-t-0 md:border-l'
+                        : ''
+                    }`}
+                  >
+                    <div className='mb-8 flex items-center justify-between'>
+                      <div className='flex h-10 w-10 items-center justify-center border border-black/15'>
+                        <Icon className={`h-5 w-5 ${signal.accent}`} />
+                      </div>
+                      <span
+                        className={`h-2 w-2 rounded-full ${signal.marker}`}
+                      />
+                    </div>
+                    <p className='mb-3 text-xs font-semibold tracking-[0.14em] text-black/40 uppercase'>
+                      {signal.eyebrow}
+                    </p>
+                    <h3 className='mb-4 text-xl font-semibold'>
+                      {signal.title}
+                    </h3>
+                    <p className='text-sm leading-6 text-black/55'>
+                      {signal.description}
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id='workflow' className='bg-[#171a1b] text-white'>
+          <div className='mx-auto max-w-[1280px] px-5 py-24 sm:px-8 sm:py-32'>
+            <div className='mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end'>
+              <div>
+                <p className='mb-4 text-xs font-semibold tracking-[0.18em] text-[#32d6b4] uppercase'>
+                  Human in control
+                </p>
+                <h2 className='max-w-2xl text-4xl leading-tight font-semibold tracking-[0] sm:text-5xl'>
+                  AI 提速，边界不让步
+                </h2>
+              </div>
+              <p className='max-w-md text-sm leading-6 text-white/50'>
+                AI
+                可以提出建议和生成操作草案，但权限系统、人工确认与审计链始终掌握最终控制权。
               </p>
             </div>
-            <div className='flex gap-6'>
-              <a
-                href='https://blog.guizimo.com'
-                target='_blank'
-                className='text-muted-foreground hover:text-primary text-sm transition-colors duration-200'
-              >
-                博客
-              </a>
-              <a
-                href='https://github.com/guizimo'
-                target='_blank'
-                className='text-muted-foreground hover:text-primary text-sm transition-colors duration-200'
-              >
-                GitHub
-              </a>
-              <a
-                href='https://github.com/guizimo/n-admin/issues'
-                target='_blank'
-                className='text-muted-foreground hover:text-primary text-sm transition-colors duration-200'
-              >
-                反馈
-              </a>
+
+            <div className='grid border-t border-white/15 md:grid-cols-4'>
+              {flow.map((item, index) => (
+                <div
+                  key={item.step}
+                  className={`relative border-b border-white/15 py-8 md:min-h-64 md:border-b-0 md:px-6 md:py-10 ${
+                    index > 0 ? 'md:border-l' : ''
+                  }`}
+                >
+                  <span className='text-xs font-medium text-[#32d6b4]'>
+                    {item.step}
+                  </span>
+                  <div className='mt-16 md:mt-24'>
+                    <h3 className='mb-2 text-lg font-medium'>{item.title}</h3>
+                    <p className='text-sm leading-6 text-white/40'>
+                      {item.detail}
+                    </p>
+                  </div>
+                  {index < flow.length - 1 && (
+                    <ArrowRight className='absolute top-9 right-5 hidden h-4 w-4 text-white/20 md:block' />
+                  )}
+                </div>
+              ))}
             </div>
+          </div>
+        </section>
+
+        <section id='open-source' className='bg-[#dff7f0]'>
+          <div className='mx-auto grid max-w-[1280px] gap-14 px-5 py-24 sm:px-8 sm:py-32 lg:grid-cols-[1fr_0.8fr] lg:items-center'>
+            <div>
+              <div className='mb-8 flex h-12 w-12 items-center justify-center bg-[#171a1b] text-white'>
+                <Github className='h-5 w-5' />
+              </div>
+              <p className='mb-4 text-xs font-semibold tracking-[0.18em] text-[#007d6e] uppercase'>
+                Open source, open path
+              </p>
+              <h2 className='max-w-2xl text-4xl leading-tight font-semibold tracking-[0] sm:text-5xl'>
+                从今天的管理后台，走向下一代 AI 软件
+              </h2>
+              <p className='mt-6 max-w-2xl text-base leading-7 text-black/55'>
+                N Admin 基于 Next.js 16、React 19、Drizzle ORM 与细粒度 RBAC
+                构建。你可以直接使用，也可以沿着清晰的模块边界继续演进。
+              </p>
+              <div className='mt-8 flex flex-col gap-3 sm:flex-row'>
+                <a
+                  href='https://github.com/guizimo/n-admin'
+                  target='_blank'
+                  rel='noreferrer'
+                  className='inline-flex h-12 items-center justify-center gap-2 bg-[#171a1b] px-5 text-sm font-medium text-white transition-transform hover:-translate-y-0.5'
+                >
+                  <Github className='h-4 w-4' />
+                  查看源代码
+                </a>
+                <Link
+                  href='/dashboard'
+                  className='inline-flex h-12 items-center justify-center gap-2 border border-black/20 bg-transparent px-5 text-sm font-medium hover:bg-white/50'
+                >
+                  打开控制台
+                  <ArrowRight className='h-4 w-4' />
+                </Link>
+              </div>
+            </div>
+
+            <div className='border-l border-black/15 pl-6 sm:pl-10'>
+              <p className='mb-6 text-xs font-semibold tracking-[0.16em] text-black/40 uppercase'>
+                Production foundation
+              </p>
+              <ul className='space-y-5'>
+                {[
+                  '用户、角色与权限完整闭环',
+                  'AI 洞察与结构化分析接口',
+                  '操作日志与可追溯审计',
+                  '响应式工作台与明暗主题',
+                  'TypeScript 端到端类型约束'
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className='flex items-center gap-3 text-sm font-medium'
+                  >
+                    <span className='flex h-5 w-5 items-center justify-center bg-[#171a1b] text-white'>
+                      <Check className='h-3 w-3' />
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className='bg-[#f5f6f2]'>
+        <div className='mx-auto flex max-w-[1280px] flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between'>
+          <div className='flex items-center gap-2.5'>
+            <Image src='/logo.png' alt='' width={28} height={28} />
+            <span className='text-sm font-semibold'>{siteConfig.name}</span>
+            <span className='ml-2 text-xs text-black/35'>AI Native Admin</span>
+          </div>
+          <div className='flex flex-wrap gap-x-6 gap-y-3 text-xs text-black/45'>
+            <span>© {new Date().getFullYear()} Guizimo</span>
+            <a
+              href='https://github.com/guizimo/n-admin/issues'
+              target='_blank'
+              rel='noreferrer'
+              className='hover:text-black'
+            >
+              反馈
+            </a>
+            <a
+              href='https://blog.guizimo.com'
+              target='_blank'
+              rel='noreferrer'
+              className='hover:text-black'
+            >
+              博客
+            </a>
+            <span>MIT License</span>
           </div>
         </div>
       </footer>
