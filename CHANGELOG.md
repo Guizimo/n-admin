@@ -4,6 +4,13 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0](https://github.com/guizimo/n-admin/compare/v0.2.0...v0.3.0) (2026-07-27)
+
+
+### ✨ 新增功能
+
+* redesign landing page for AI native positioning ([bcee9d1](https://github.com/guizimo/n-admin/commit/bcee9d1db9452ae2c412153a742ea9cb7d6cee5d))
+
 ## [0.2.0](https://github.com/guizimo/n-admin/compare/v0.1.0...v0.2.0) (2026-06-17)
 
 
