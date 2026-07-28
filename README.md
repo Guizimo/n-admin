@@ -1,184 +1,160 @@
 <div align="center">
-  <img src="public/logo.png" alt="N-Admin Logo" width="120" height="120">
-  
-  # N Admin
-  
-  可解释、可审计、可执行的 AI Native 管理操作系统。
-  
-  [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-  [![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-  
+  <img src="public/logo.png" alt="N Admin Logo" width="112" height="112">
+
+# N Admin
+
+可解释、可审计、可执行的 AI Native 管理操作系统。
+
+[简体中文](README.md) | [English](README.en.md)
+
+[![Release](https://img.shields.io/github/v/release/Guizimo/n-admin?style=flat-square)](https://github.com/Guizimo/n-admin/releases)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149eca?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/github/license/Guizimo/n-admin?style=flat-square)](LICENSE)
+
 </div>
 
-## 特性
+## 项目简介
 
-- **AI 洞察**: 基于用户、权限与操作日志生成结构化风险建议
-- **现代框架**: Next.js 16 + React 19 + TypeScript
-- **UI组件**: Tailwind CSS + Shadcn UI
-- **权限系统**: 基于 RBAC 的完整权限控制
-- **数据库**: Drizzle ORM + PostgreSQL/MySQL
-- **认证**: JWT + 中间件保护
-- **主题**: 明暗主题切换
-- **响应式**: 完美适配桌面和移动端
+N Admin 是一个基于 Next.js 16、React 19、Drizzle ORM 和 MySQL 构建的开源管理系统。它提供用户、角色、权限、日志与数据看板等后台基础能力，并正在向能够理解系统状态、解释判断依据和安全执行操作的 AI Native 软件演进。
 
-## 功能模块
+当前版本：`v0.3.0`
 
-- 👥 用户管理 - 用户CRUD、角色分配
-- 🛡️ 角色权限 - 细粒度权限控制
-- 📊 数据看板 - 图表可视化
-- 📝 系统日志 - 操作记录追踪
-- ✨ AI 洞察 - 风险识别、证据说明与处置建议
-- ⚙️ 系统设置 - 个性化配置
+## 当前能力
+
+| 模块     | 能力                                                     |
+| -------- | -------------------------------------------------------- |
+| AI 洞察  | 分析用户、权限和操作日志，输出结构化风险、证据与处置建议 |
+| 数据看板 | 关键指标、用户趋势、系统状态与洞察汇总                   |
+| 用户管理 | 用户增删改查、状态管理与角色分配                         |
+| 角色权限 | 分层权限树、角色授权与细粒度 RBAC 控制                   |
+| 系统日志 | 操作记录、条件筛选、详情查看与统计                       |
+| 使用体验 | 响应式布局、明暗主题、命令搜索与加载状态                 |
+
+## AI Native 方向
+
+N Admin 不只展示数据，还希望形成一条完整的管理决策链：
+
+1. 理解用户、角色、权限、日志和业务状态。
+2. 生成带置信度与证据引用的判断。
+3. 提供影响范围明确、可以回退的操作草案。
+4. 经过权限校验和人工确认后执行，并保留完整审计记录。
+
+目前已完成 AI 洞察基线，Provider 抽象、带证据的管理 Copilot 和受控 AI 行动仍在持续开发中。
+
+## 技术栈
+
+- Next.js 16 App Router、React 19、TypeScript
+- Tailwind CSS 4、shadcn/ui、Radix UI、Lucide
+- Drizzle ORM、MySQL
+- JWT、bcryptjs、细粒度 RBAC
+- Zustand、TanStack Table、Recharts、nuqs
+- ESLint、Prettier、Husky、Commitizen
 
 ## 快速开始
 
 ### 环境要求
 
-- Node.js >= 18.0
-- pnpm >= 9.0
-- PostgreSQL/MySQL
+- Node.js >= 20.9
+- pnpm >= 9
+- MySQL 8 或兼容服务
 
-### 安装
+### 安装与运行
 
 ```bash
-# 克隆项目
-git clone https://github.com/guizimo/n-admin.git
+git clone https://github.com/Guizimo/n-admin.git
 cd n-admin
 
-# 安装依赖
 pnpm install
+cp .env.example .env
+```
 
-# 环境配置
-cp .env.example .env.local
-# 编辑 .env.local 配置数据库连接
+创建数据库：
 
-# 数据库初始化
-pnpm db:generate
+```sql
+CREATE DATABASE n_admin CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+修改 `.env` 中的数据库连接和安全配置，然后初始化并启动项目：
+
+```bash
 pnpm db:push
 pnpm init:admin
-
-# 启动开发服务器
 pnpm dev
 ```
 
-访问 http://localhost:3000
+访问 [http://localhost:3000](http://localhost:3000)。管理员账号由 `.env` 中的 `ADMIN_EMAIL` 和 `ADMIN_PASSWORD` 决定。
 
-**管理员账号:**
+> 在生产环境中务必使用高强度 `JWT_SECRET` 和管理员密码，不要保留示例凭据。
 
-- 邮箱: `admin@example.com`
-- 密码: `Admin@123456`
+## 环境变量
+
+| 变量                          | 是否必需   | 说明                     |
+| ----------------------------- | ---------- | ------------------------ |
+| `NEXT_PUBLIC_APP_NAME`        | 否         | 应用名称，默认 `N Admin` |
+| `NEXT_PUBLIC_APP_DESCRIPTION` | 否         | 应用描述                 |
+| `DATABASE_HOST`               | 是         | MySQL 主机地址           |
+| `DATABASE_PORT`               | 否         | MySQL 端口，默认 `3306`  |
+| `DATABASE_USERNAME`           | 是         | MySQL 用户名             |
+| `DATABASE_PASSWORD`           | 是         | MySQL 密码               |
+| `DATABASE_NAME`               | 是         | MySQL 数据库名           |
+| `JWT_SECRET`                  | 生产必需   | JWT 签名密钥             |
+| `ADMIN_EMAIL`                 | 初始化必需 | 初始超级管理员邮箱       |
+| `ADMIN_USERNAME`              | 初始化必需 | 初始超级管理员名称       |
+| `ADMIN_PASSWORD`              | 初始化必需 | 初始超级管理员密码       |
+| `SALT_ROUNDS`                 | 否         | bcrypt 轮数，默认 `12`   |
+
+完整示例见 [.env.example](.env.example)。
+
+## 常用命令
+
+| 命令               | 说明                         |
+| ------------------ | ---------------------------- |
+| `pnpm dev`         | 启动开发服务器               |
+| `pnpm build`       | 构建生产版本                 |
+| `pnpm start`       | 启动生产服务器               |
+| `pnpm lint`        | 运行 ESLint                  |
+| `pnpm db:generate` | 生成数据库迁移               |
+| `pnpm db:push`     | 将 Schema 同步到数据库       |
+| `pnpm db:studio`   | 启动 Drizzle Studio          |
+| `pnpm init:admin`  | 初始化权限、角色和超级管理员 |
+| `pnpm commit`      | 使用 Commitizen 创建规范提交 |
 
 ## 项目结构
 
-```
+```text
 src/
-├── app/              # Next.js App Router
-│   ├── api/         # API 路由
-│   ├── dashboard/   # 管理后台页面
-│   └── login/       # 登录页面
-├── components/      # 组件库
-│   ├── ui/         # 基础UI组件
-│   └── layout/     # 布局组件
-├── lib/            # 工具函数
-├── hooks/          # 自定义Hooks
-└── db/             # 数据库配置
+├── app/              # 页面、布局与 API Routes
+├── components/       # UI、布局和业务组件
+├── config/           # 应用配置
+├── contexts/         # React 上下文
+├── db/               # Drizzle Schema 与数据库连接
+├── hooks/            # 自定义 Hooks
+├── lib/              # 认证、权限、日志等服务端能力
+├── service/          # 前端 API 客户端
+├── stores/           # Zustand 状态
+└── types/            # TypeScript 类型
 ```
-
-## 开发命令
-
-```bash
-# 开发
-pnpm dev          # 启动开发服务器
-pnpm build        # 构建生产版本
-pnpm start        # 启动生产服务器
-pnpm lint         # 代码检查
-
-# 数据库
-pnpm db:generate  # 生成迁移文件
-pnpm db:push      # 推送数据库结构
-pnpm db:studio    # 数据库管理界面
-pnpm init:admin   # 初始化管理员
-```
-
-## 技术栈
-
-### 前端
-
-- **框架**: Next.js 16 (App Router)
-- **UI**: React 19 + TypeScript
-- **样式**: Tailwind CSS + Shadcn UI
-- **状态**: React Hooks + Context
-- **图表**: Recharts
-
-### 后端
-
-- **API**: Next.js API Routes
-- **数据库**: Drizzle ORM
-- **认证**: JWT + 中间件
-- **加密**: bcryptjs
-
-### 开发工具
-
-- **包管理**: pnpm
-- **代码规范**: ESLint + Prettier
-- **提交规范**: Commitizen
-- **类型检查**: TypeScript
 
 ## 部署
 
-### Vercel (推荐)
+推荐使用 Vercel：将 GitHub 仓库导入 Vercel，配置与 `.env.example` 对应的环境变量，并确保部署环境能够访问 MySQL。推送到生产分支后即可自动构建和发布。
+
+其他部署环境可执行：
 
 ```bash
-# 连接 GitHub 仓库到 Vercel
-# 配置环境变量
-# 自动部署
-```
-
-### Docker
-
-```bash
-docker build -t n-admin .
-docker run -p 3000:3000 n-admin
-```
-
-### 传统服务器
-
-```bash
+pnpm install --frozen-lockfile
 pnpm build
 pnpm start
 ```
 
-## 环境变量
-
-```bash
-# 数据库
-DATABASE_URL="postgresql://user:password@localhost:5432/n_admin"
-
-# JWT
-JWT_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
-
-# 应用
-NEXT_PUBLIC_APP_NAME="N-Admin"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
-
 ## 贡献
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`pnpm commit`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 打开 Pull Request
+欢迎提交 Issue、讨论和 Pull Request。开始开发前请阅读 [提交指南](docs/commit-guide.md)，权限模型说明见 [权限文档](src/docs/permissions.md)。
 
-## 许可证
+## 版本与许可
 
-MIT License - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 支持
-
-- 📖 [文档](./DEPLOYMENT.md)
-- 🐛 [问题反馈](https://github.com/guizimo/n-admin/issues)
-- 💬 [讨论](https://github.com/guizimo/n-admin/discussions)
+- [更新日志](CHANGELOG.md)
+- [GitHub Releases](https://github.com/Guizimo/n-admin/releases)
+- [MIT License](LICENSE)
