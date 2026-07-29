@@ -19,8 +19,6 @@ An explainable, auditable, and actionable AI-native administration system.
 
 N Admin is an open-source administration system built with Next.js 16, React 19, Drizzle ORM, and MySQL. It provides the foundations of an admin application, including users, roles, permissions, audit logs, and dashboards, while evolving toward AI-native software that can understand system state, explain its reasoning, and execute actions safely.
 
-Current release: `v0.3.0`
-
 ## Current Capabilities
 
 | Module                | Capabilities                                                                                               |
