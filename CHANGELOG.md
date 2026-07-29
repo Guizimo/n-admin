@@ -4,6 +4,18 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+### [0.3.1](https://github.com/guizimo/n-admin/compare/v0.3.0...v0.3.1) (2026-07-29)
+
+
+### 📚 文档更新
+
+* add bilingual readme ([1d4a26a](https://github.com/guizimo/n-admin/commit/1d4a26a6bf802b6901d0e9a6e82066845fc6b224))
+
+
+### ✨ 新增功能
+
+* redesign login experience ([6169460](https://github.com/guizimo/n-admin/commit/616946083fd6caf9d3908b9ffe32c85d44bb25d8))
+
 ## [0.3.0](https://github.com/guizimo/n-admin/compare/v0.2.0...v0.3.0) (2026-07-27)
 
 
