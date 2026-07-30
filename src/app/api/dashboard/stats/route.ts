@@ -13,6 +13,11 @@ export async function GET() {
       now.getDate()
     );
     const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const trendStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 29
+    );
 
     // 获取基本统计
     const [
@@ -47,53 +52,53 @@ export async function GET() {
         .where(gte(systemLogs.createdAt, startOfWeek))
     ]);
 
-    // 获取错误日志数量
-    const [errorLogs] = await db
-      .select({ count: count() })
-      .from(systemLogs)
-      .where(sql`level = 'error'`);
+    const [errorLogRows, recentUsers, logLevelStats, dailyUserTrend] =
+      await Promise.all([
+        db
+          .select({ count: count() })
+          .from(systemLogs)
+          .where(sql`level = 'error'`),
+        db
+          .select({
+            id: users.id,
+            username: users.username,
+            email: users.email,
+            avatar: users.avatar,
+            createdAt: users.createdAt
+          })
+          .from(users)
+          .orderBy(desc(users.createdAt))
+          .limit(5),
+        db
+          .select({
+            level: systemLogs.level,
+            count: count()
+          })
+          .from(systemLogs)
+          .groupBy(systemLogs.level)
+          .orderBy(desc(count())),
+        db
+          .select({
+            date: sql<string>`DATE(${users.createdAt})`,
+            users: count()
+          })
+          .from(users)
+          .where(gte(users.createdAt, trendStart))
+          .groupBy(sql`DATE(${users.createdAt})`)
+      ]);
 
-    // 获取最近用户活动
-    const recentUsers = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        avatar: users.avatar,
-        createdAt: users.createdAt
-      })
-      .from(users)
-      .orderBy(desc(users.createdAt))
-      .limit(5);
-
-    // 获取日志级别分布
-    const logLevelStats = await db
-      .select({
-        level: systemLogs.level,
-        count: count()
-      })
-      .from(systemLogs)
-      .groupBy(systemLogs.level)
-      .orderBy(desc(count()));
-
-    // 获取最近30天的用户注册数量（简化版）
+    const errorLogs = errorLogRows[0];
+    const dailyUsersByDate = new Map(
+      dailyUserTrend.map((item) => [item.date, Number(item.users)])
+    );
     const userTrend = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const startOfTargetDay = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate()
-      );
-
-      const [dayUsers] = await db
-        .select({ count: count() })
-        .from(users)
-        .where(gte(users.createdAt, startOfTargetDay));
+      const dateKey = date.toISOString().split('T')[0];
 
       userTrend.push({
-        date: date.toISOString().split('T')[0],
-        users: dayUsers.count || 0
+        date: dateKey,
+        users: dailyUsersByDate.get(dateKey) || 0
       });
     }
 
