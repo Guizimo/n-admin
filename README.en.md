@@ -88,20 +88,22 @@ Open [http://localhost:3000](http://localhost:3000). The administrator credentia
 
 ## Environment Variables
 
-| Variable                      | Required       | Description                             |
-| ----------------------------- | -------------- | --------------------------------------- |
-| `NEXT_PUBLIC_APP_NAME`        | No             | Application name; defaults to `N Admin` |
-| `NEXT_PUBLIC_APP_DESCRIPTION` | No             | Application description                 |
-| `DATABASE_HOST`               | Yes            | MySQL host                              |
-| `DATABASE_PORT`               | No             | MySQL port; defaults to `3306`          |
-| `DATABASE_USERNAME`           | Yes            | MySQL username                          |
-| `DATABASE_PASSWORD`           | Yes            | MySQL password                          |
-| `DATABASE_NAME`               | Yes            | MySQL database name                     |
-| `JWT_SECRET`                  | Production     | JWT signing secret                      |
-| `ADMIN_EMAIL`                 | Initialization | Initial super administrator email       |
-| `ADMIN_USERNAME`              | Initialization | Initial super administrator name        |
-| `ADMIN_PASSWORD`              | Initialization | Initial super administrator password    |
-| `SALT_ROUNDS`                 | No             | bcrypt cost factor; defaults to `12`    |
+| Variable                           | Required       | Description                                 |
+| ---------------------------------- | -------------- | ------------------------------------------- |
+| `NEXT_PUBLIC_APP_NAME`             | No             | Application name; defaults to `N Admin`     |
+| `NEXT_PUBLIC_APP_DESCRIPTION`      | No             | Application description                     |
+| `DATABASE_HOST`                    | Yes            | MySQL host                                  |
+| `DATABASE_PORT`                    | No             | MySQL port; defaults to `3306`              |
+| `DATABASE_USERNAME`                | Yes            | MySQL username                              |
+| `DATABASE_PASSWORD`                | Yes            | MySQL password                              |
+| `DATABASE_NAME`                    | Yes            | MySQL database name                         |
+| `DATABASE_SSL`                     | No             | Enable TLS; automatic for TiDB/Production   |
+| `DATABASE_SSL_REJECT_UNAUTHORIZED` | No             | Verify TLS certificates; defaults to `true` |
+| `JWT_SECRET`                       | Production     | JWT signing secret                          |
+| `ADMIN_EMAIL`                      | Initialization | Initial super administrator email           |
+| `ADMIN_USERNAME`                   | Initialization | Initial super administrator name            |
+| `ADMIN_PASSWORD`                   | Initialization | Initial super administrator password        |
+| `SALT_ROUNDS`                      | No             | bcrypt cost factor; defaults to `12`        |
 
 See [.env.example](.env.example) for a complete example.
 

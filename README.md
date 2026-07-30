@@ -88,20 +88,22 @@ pnpm dev
 
 ## 环境变量
 
-| 变量                          | 是否必需   | 说明                     |
-| ----------------------------- | ---------- | ------------------------ |
-| `NEXT_PUBLIC_APP_NAME`        | 否         | 应用名称，默认 `N Admin` |
-| `NEXT_PUBLIC_APP_DESCRIPTION` | 否         | 应用描述                 |
-| `DATABASE_HOST`               | 是         | MySQL 主机地址           |
-| `DATABASE_PORT`               | 否         | MySQL 端口，默认 `3306`  |
-| `DATABASE_USERNAME`           | 是         | MySQL 用户名             |
-| `DATABASE_PASSWORD`           | 是         | MySQL 密码               |
-| `DATABASE_NAME`               | 是         | MySQL 数据库名           |
-| `JWT_SECRET`                  | 生产必需   | JWT 签名密钥             |
-| `ADMIN_EMAIL`                 | 初始化必需 | 初始超级管理员邮箱       |
-| `ADMIN_USERNAME`              | 初始化必需 | 初始超级管理员名称       |
-| `ADMIN_PASSWORD`              | 初始化必需 | 初始超级管理员密码       |
-| `SALT_ROUNDS`                 | 否         | bcrypt 轮数，默认 `12`   |
+| 变量                               | 是否必需   | 说明                               |
+| ---------------------------------- | ---------- | ---------------------------------- |
+| `NEXT_PUBLIC_APP_NAME`             | 否         | 应用名称，默认 `N Admin`           |
+| `NEXT_PUBLIC_APP_DESCRIPTION`      | 否         | 应用描述                           |
+| `DATABASE_HOST`                    | 是         | MySQL 主机地址                     |
+| `DATABASE_PORT`                    | 否         | MySQL 端口，默认 `3306`            |
+| `DATABASE_USERNAME`                | 是         | MySQL 用户名                       |
+| `DATABASE_PASSWORD`                | 是         | MySQL 密码                         |
+| `DATABASE_NAME`                    | 是         | MySQL 数据库名                     |
+| `DATABASE_SSL`                     | 否         | 启用 TLS，TiDB/Production 自动启用 |
+| `DATABASE_SSL_REJECT_UNAUTHORIZED` | 否         | 验证 TLS 证书，默认 `true`         |
+| `JWT_SECRET`                       | 生产必需   | JWT 签名密钥                       |
+| `ADMIN_EMAIL`                      | 初始化必需 | 初始超级管理员邮箱                 |
+| `ADMIN_USERNAME`                   | 初始化必需 | 初始超级管理员名称                 |
+| `ADMIN_PASSWORD`                   | 初始化必需 | 初始超级管理员密码                 |
+| `SALT_ROUNDS`                      | 否         | bcrypt 轮数，默认 `12`             |
 
 完整示例见 [.env.example](.env.example)。
 
