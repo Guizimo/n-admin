@@ -119,9 +119,9 @@ export function PermissionFilters({
    * 渲染快速搜索栏
    */
   const renderQuickSearch = () => (
-    <div className='flex items-center gap-3'>
+    <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
       {/* 权限名称搜索 */}
-      <div className='relative max-w-sm flex-1'>
+      <div className='relative w-full sm:max-w-sm sm:flex-1'>
         <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
         <Input
           placeholder='搜索权限名称...'
@@ -136,7 +136,7 @@ export function PermissionFilters({
       <Button
         onClick={handleSearch}
         disabled={loading}
-        className='shrink-0 cursor-pointer'
+        className='w-full shrink-0 cursor-pointer sm:w-auto'
       >
         <Search className='mr-2 h-4 w-4' />
         查询
@@ -146,7 +146,7 @@ export function PermissionFilters({
       <Button
         variant='outline'
         onClick={() => setIsAdvancedFilterOpen(true)}
-        className='shrink-0 cursor-pointer'
+        className='w-full shrink-0 cursor-pointer sm:w-auto'
       >
         <Filter className='mr-2 h-4 w-4' />
         高级筛选
@@ -160,7 +160,7 @@ export function PermissionFilters({
         <Button
           variant='ghost'
           onClick={handleReset}
-          className='text-muted-foreground hover:text-foreground shrink-0 cursor-pointer'
+          className='text-muted-foreground hover:text-foreground w-full shrink-0 cursor-pointer sm:w-auto'
         >
           <RotateCcw className='mr-1 h-4 w-4' />
           重置
@@ -236,7 +236,7 @@ export function PermissionFilters({
   );
 
   return (
-    <div className='space-y-4'>
+    <div className='bg-background space-y-4 rounded-lg border p-3 shadow-sm'>
       {/* 快速搜索栏 */}
       {renderQuickSearch()}
 

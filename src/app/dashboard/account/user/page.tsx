@@ -141,7 +141,7 @@ export default function UserManagementPage() {
   return (
     <PermissionGuard permissions={PERMISSIONS.USER.READ}>
       <PageContainer scrollable={false}>
-        <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        <div className='flex min-h-0 w-full flex-1 flex-col gap-4'>
           {/* 页面头部 */}
           <UserPageHeader onCreateUser={handleOpenCreateDialog} />
 
@@ -188,7 +188,7 @@ export default function UserManagementPage() {
             </div>
 
             {/* 分页控件 */}
-            <div className='flex-shrink-0 pt-4'>
+            <div className='flex-shrink-0'>
               <Pagination
                 pagination={pagination}
                 onPageChange={(page) => updatePagination({ page })}

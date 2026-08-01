@@ -70,7 +70,7 @@ export default function LogsPage() {
   return (
     <PermissionGuard permissions={PERMISSIONS.LOG.READ}>
       <PageContainer scrollable={false}>
-        <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        <div className='flex min-h-0 w-full flex-1 flex-col gap-4'>
           {/* 页面头部 */}
           <LogPageHeader
             filters={filters}
@@ -87,7 +87,7 @@ export default function LogsPage() {
           />
 
           {/* 数据表格 */}
-          <div className='flex min-h-0 flex-col'>
+          <div className='flex min-h-0 flex-1 flex-col'>
             <LogTable
               data={logs}
               loading={loading}

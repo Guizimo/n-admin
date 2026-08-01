@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { FileX, Database, Search, Users } from 'lucide-react';
 import { TableSkeleton } from './table-skeleton';
+import { cn } from '@/lib/utils';
 
 interface Column<T> {
   key: string;
@@ -61,20 +62,18 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className='bg-background relative h-full overflow-hidden rounded-md border'>
+    <div className='bg-card relative h-full overflow-hidden rounded-lg border shadow-sm'>
       <div className='h-full overflow-auto'>
-        <Table className='h-full'>
-          <TableHeader className='bg-background sticky top-0'>
-            <TableRow className='bg-muted/50 hover:bg-muted/50'>
+        <Table className='h-full min-w-[760px]'>
+          <TableHeader className='bg-muted/60 sticky top-0 z-10'>
+            <TableRow className='bg-muted/60 hover:bg-muted/60'>
               {columns.map((column) => (
                 <TableHead
                   key={column.key}
-                  className={`bg-muted/50 font-semibold ${column.className || ''}`}
-                  style={{
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'hsl(var(--muted) / 0.5)'
-                  }}
+                  className={cn(
+                    'bg-muted/60 h-11 px-4 text-xs font-semibold',
+                    column.className
+                  )}
                 >
                   {column.title}
                 </TableHead>
@@ -110,10 +109,13 @@ export function DataTable<T extends Record<string, any>>({
               data.map((record, index) => (
                 <TableRow
                   key={getRowKey(record, index)}
-                  className='hover:bg-muted/50'
+                  className='hover:bg-muted/40 h-13'
                 >
                   {columns.map((column) => (
-                    <TableCell key={column.key} className={column.className}>
+                    <TableCell
+                      key={column.key}
+                      className={cn('px-4 py-3', column.className)}
+                    >
                       {column.render
                         ? column.render(record[column.key], record, index)
                         : record[column.key]}

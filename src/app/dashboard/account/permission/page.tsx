@@ -85,7 +85,7 @@ export default function PermissionManagementPage() {
   return (
     <PermissionGuard permissions={PERMISSIONS.PERMISSION.READ}>
       <PageContainer scrollable={false}>
-        <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        <div className='flex min-h-0 w-full flex-1 flex-col gap-4'>
           {/* 页面头部 */}
           <PermissionPageHeader onCreatePermission={openCreateDialog} />
 
@@ -98,7 +98,7 @@ export default function PermissionManagementPage() {
           />
 
           {/* 数据表格 */}
-          <div className='flex min-h-0 flex-col'>
+          <div className='flex min-h-0 flex-1 flex-col'>
             <PermissionTable
               permissions={permissions}
               loading={loading}

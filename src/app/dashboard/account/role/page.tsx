@@ -123,7 +123,7 @@ export default function RoleManagementPage() {
   return (
     <PermissionGuard permissions={PERMISSIONS.ROLE.READ}>
       <PageContainer scrollable={false}>
-        <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        <div className='flex min-h-0 w-full flex-1 flex-col gap-4'>
           {/* 页面头部 */}
           <RolePageHeader onCreateRole={openCreateDialog} />
 
@@ -136,7 +136,7 @@ export default function RoleManagementPage() {
           />
 
           {/* 数据表格 */}
-          <div className='flex min-h-0 flex-col'>
+          <div className='flex min-h-0 flex-1 flex-col'>
             <RoleTable
               data={roles}
               loading={loading}
