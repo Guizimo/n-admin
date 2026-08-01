@@ -15,6 +15,7 @@ export function PermissionPageHeader({
 }: PermissionPageHeaderProps) {
   return (
     <PageHeader
+      eyebrow='Policy Control'
       title='权限管理'
       description='管理系统权限和访问控制'
       action={{

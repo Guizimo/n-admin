@@ -17,7 +17,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PageContainer from '@/components/layout/page-container';
 import { useAuth } from '@/hooks/use-auth';
-import { TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import {
+  Activity,
+  ChartNoAxesCombined,
+  RefreshCw,
+  ScrollText,
+  ShieldCheck,
+  Users,
+  type LucideIcon
+} from 'lucide-react';
 import { formatDateTime } from '@/components/table/utils';
 import { PageHeader } from '@/components/table/page-header';
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -56,6 +64,46 @@ interface DashboardStats {
     date: string;
     users: number;
   }>;
+}
+
+interface MetricCardProps {
+  title: string;
+  value: number;
+  note: string;
+  detail: string;
+  icon: LucideIcon;
+  tone: string;
+}
+
+function MetricCard({
+  title,
+  value,
+  note,
+  detail,
+  icon: Icon,
+  tone
+}: MetricCardProps) {
+  return (
+    <Card className='py-0'>
+      <CardContent className='flex items-start justify-between gap-4 py-4'>
+        <div className='min-w-0 space-y-3'>
+          <p className='text-muted-foreground text-sm font-medium'>{title}</p>
+          <div>
+            <p className='text-3xl font-semibold tabular-nums'>
+              {value.toLocaleString()}
+            </p>
+            <p className='text-foreground mt-2 text-sm'>{note}</p>
+            <p className='text-muted-foreground mt-1 text-xs'>{detail}</p>
+          </div>
+        </div>
+        <div
+          className={`flex size-10 shrink-0 items-center justify-center rounded-md ${tone}`}
+        >
+          <Icon className='size-5' />
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function DashboardOverview() {
@@ -113,11 +161,9 @@ export default function DashboardOverview() {
     fetchAiInsights();
   }, []);
 
-  // 处理时间范围改变
   const handleTimeRangeChange = (newRange: string) => {
     setIsChangingRange(true);
     setTimeRange(newRange);
-    // 添加一个短暂的延迟来显示切换效果
     setTimeout(() => setIsChangingRange(false), 300);
   };
 
@@ -129,7 +175,6 @@ export default function DashboardOverview() {
     );
   }
 
-  // 图表配置
   const chartConfig = {
     users: {
       label: '用户数',
@@ -137,9 +182,7 @@ export default function DashboardOverview() {
     }
   } satisfies ChartConfig;
 
-  // 处理真实的图表数据，根据timeRange过滤
   const getChartData = () => {
-    // 如果有真实数据，使用真实数据
     if (stats?.userTrend && stats.userTrend.length > 0) {
       const allData = stats.userTrend.map((item) => ({
         date: new Date(item.date).toLocaleDateString('zh-CN', {
@@ -150,7 +193,6 @@ export default function DashboardOverview() {
         originalDate: new Date(item.date)
       }));
 
-      // 根据timeRange过滤数据
       const now = new Date();
       const filterDate = new Date();
 
@@ -168,48 +210,22 @@ export default function DashboardOverview() {
         .map((item) => ({ date: item.date, users: item.users }));
     }
 
-    // 如果没有真实数据，生成示例数据用于展示
-    const now = new Date();
-    const data = [];
-    let days = 7;
-
-    if (timeRange === '30d') days = 30;
-    else if (timeRange === '7d') days = 7;
-    else if (timeRange === '3d') days = 3;
-
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toLocaleDateString('zh-CN', {
-        month: 'short',
-        day: 'numeric'
-      });
-
-      // 生成示例数据
-      const baseUsers = 40;
-      const dailyVariation = Math.sin(i * 0.5) * 15 + Math.random() * 8;
-      const users = Math.max(0, Math.round(baseUsers + dailyVariation));
-
-      data.push({ date: dateStr, users });
-    }
-
-    return data;
+    return [];
   };
 
   const chartData = getChartData();
-
-  const isPositiveGrowth = stats?.overview.userGrowthRate.startsWith('+');
-  const weekGrowthRate = '+12.5%'; // 示例数据
-  const roleGrowthRate = '+4.5%'; // 示例数据
-  const logGrowthRate = '-8.2%'; // 示例数据
+  const overview = stats?.overview;
+  const errorRate = overview?.totalLogs
+    ? ((overview.errorLogs / overview.totalLogs) * 100).toFixed(2)
+    : '0.00';
 
   return (
-    <PageContainer scrollable={false}>
-      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-6 overflow-y-auto'>
-        {/* 页面头部 */}
+    <PageContainer>
+      <div className='w-full min-w-0 space-y-5 pb-6'>
         <PageHeader
-          title={`欢迎回来，${user.username} 👋`}
-          description='这里是您的系统概览和关键指标'
+          eyebrow='AI Operations Center'
+          title={`欢迎回来，${user.username}`}
+          description='查看系统运行状态、账号变化和需要关注的事项'
           action={{
             label: '刷新数据',
             onClick: fetchStats,
@@ -217,95 +233,39 @@ export default function DashboardOverview() {
           }}
         />
 
-        {/* 统计卡片 */}
         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>总用户数</CardTitle>
-              <Badge
-                variant={isPositiveGrowth ? 'default' : 'destructive'}
-                className='ml-auto'
-              >
-                {isPositiveGrowth ? (
-                  <TrendingUp className='mr-1 h-3 w-3' />
-                ) : (
-                  <TrendingDown className='mr-1 h-3 w-3' />
-                )}
-                {stats?.overview.userGrowthRate || '+0%'}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>
-                {stats?.overview.totalUsers?.toLocaleString() || 0}
-              </div>
-              <p className='text-muted-foreground text-xs'>
-                本月新增用户趋势向上
-              </p>
-              <p className='text-muted-foreground mt-1 text-xs'>
-                今日注册 {stats?.overview.todayUsers || 0} 位新用户
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>本周活跃</CardTitle>
-              <Badge variant='default' className='ml-auto'>
-                <TrendingUp className='mr-1 h-3 w-3' />
-                {weekGrowthRate}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>
-                {stats?.overview.weekUsers?.toLocaleString() || 0}
-              </div>
-              <p className='text-muted-foreground text-xs'>
-                用户活跃度稳步提升
-              </p>
-              <p className='text-muted-foreground mt-1 text-xs'>
-                用户参与度超出预期目标
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>系统角色</CardTitle>
-              <Badge variant='default' className='ml-auto'>
-                <TrendingUp className='mr-1 h-3 w-3' />
-                {roleGrowthRate}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>
-                {stats?.overview.totalRoles || 0}
-              </div>
-              <p className='text-muted-foreground text-xs'>角色配置持续优化</p>
-              <p className='text-muted-foreground mt-1 text-xs'>
-                权限节点: {stats?.overview.totalPermissions || 0} 个
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>系统日志</CardTitle>
-              <Badge variant='destructive' className='ml-auto'>
-                <TrendingDown className='mr-1 h-3 w-3' />
-                {logGrowthRate}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>
-                {stats?.overview.totalLogs?.toLocaleString() || 0}
-              </div>
-              <p className='text-muted-foreground text-xs'>日志量环比下降</p>
-              <p className='text-muted-foreground mt-1 text-xs'>
-                今日 {stats?.overview.todayLogs || 0} 条 | 错误{' '}
-                {stats?.overview.errorLogs || 0} 条
-              </p>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title='总用户数'
+            value={overview?.totalUsers || 0}
+            note={`今日新增 ${overview?.todayUsers || 0} 位`}
+            detail={`近 7 天新增 ${overview?.weekUsers || 0} 位`}
+            icon={Users}
+            tone='border border-[#32d6b4]/25 bg-[#32d6b4]/10 text-[#32d6b4]'
+          />
+          <MetricCard
+            title='近 7 天新增'
+            value={overview?.weekUsers || 0}
+            note={`增长率 ${overview?.userGrowthRate || '0%'}`}
+            detail='按账号创建时间统计'
+            icon={Activity}
+            tone='border border-[#32d6b4]/25 bg-[#32d6b4]/10 text-[#32d6b4]'
+          />
+          <MetricCard
+            title='系统角色'
+            value={overview?.totalRoles || 0}
+            note={`${overview?.totalPermissions || 0} 个权限节点`}
+            detail='角色与权限配置总览'
+            icon={ShieldCheck}
+            tone='border border-[#f2c94c]/25 bg-[#f2c94c]/10 text-[#f2c94c]'
+          />
+          <MetricCard
+            title='系统日志'
+            value={overview?.totalLogs || 0}
+            note={`今日记录 ${overview?.todayLogs || 0} 条`}
+            detail={`错误日志 ${overview?.errorLogs || 0} 条`}
+            icon={ScrollText}
+            tone='border border-[#ff725e]/25 bg-[#ff725e]/10 text-[#ff725e]'
+          />
         </div>
 
         <AiInsightsPanel
@@ -314,7 +274,6 @@ export default function DashboardOverview() {
           onRefresh={fetchAiInsights}
         />
 
-        {/* 主图表区域 */}
         <div className='w-full'>
           <Card>
             <CardHeader>
@@ -333,7 +292,7 @@ export default function DashboardOverview() {
                     的用户注册情况
                   </CardDescription>
                 </div>
-                <div className='flex gap-1'>
+                <div className='bg-muted flex w-fit rounded-md p-1'>
                   {[
                     { key: '3d', label: '3天' },
                     { key: '7d', label: '7天' },
@@ -341,10 +300,10 @@ export default function DashboardOverview() {
                   ].map((option) => (
                     <Button
                       key={option.key}
-                      variant={timeRange === option.key ? 'default' : 'outline'}
+                      variant={timeRange === option.key ? 'secondary' : 'ghost'}
                       size='sm'
                       onClick={() => handleTimeRangeChange(option.key)}
-                      className='h-8 px-3 text-xs'
+                      className={`h-7 px-3 text-xs ${timeRange === option.key ? 'bg-background shadow-sm' : ''}`}
                       disabled={isChangingRange}
                     >
                       {option.label}
@@ -447,11 +406,9 @@ export default function DashboardOverview() {
                     </AreaChart>
                   </ChartContainer>
                 ) : (
-                  <div className='flex h-full w-full items-center justify-center'>
+                  <div className='flex h-full w-full items-center justify-center rounded-md border border-dashed'>
                     <div className='text-center'>
-                      <div className='text-muted-foreground mb-3 text-2xl'>
-                        📊
-                      </div>
+                      <ChartNoAxesCombined className='text-muted-foreground mx-auto mb-3 size-6' />
                       <p className='text-muted-foreground mb-1 text-sm font-medium'>
                         {loading
                           ? '正在加载图表数据...'
@@ -472,45 +429,39 @@ export default function DashboardOverview() {
           </Card>
         </div>
 
-        {/* 详细信息网格 */}
         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-          {/* 最近用户 */}
           <Card>
             <CardHeader>
-              <CardTitle>最近注册</CardTitle>
+              <CardTitle className='text-base'>最近注册</CardTitle>
               <CardDescription>新用户注册列表</CardDescription>
             </CardHeader>
             <CardContent>
               <div className='space-y-3'>
-                {stats?.recentUsers?.slice(0, 3).map((user, index) => (
-                  <div
-                    key={user.id}
-                    className='flex items-center justify-between'
-                  >
-                    <div className='flex items-center space-x-3'>
-                      <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium text-white ${
-                          index === 0
-                            ? 'bg-blue-500'
-                            : index === 1
-                              ? 'bg-green-500'
-                              : 'bg-purple-500'
-                        }`}
-                      >
-                        {user.username.charAt(0).toUpperCase()}
+                {stats?.recentUsers?.length ? (
+                  stats.recentUsers.slice(0, 3).map((recentUser) => (
+                    <div
+                      key={recentUser.id}
+                      className='flex items-center justify-between'
+                    >
+                      <div className='flex min-w-0 items-center space-x-3'>
+                        <div className='bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium'>
+                          {recentUser.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div className='min-w-0'>
+                          <p className='truncate text-sm font-medium'>
+                            {recentUser.username}
+                          </p>
+                          <p className='text-muted-foreground truncate text-xs'>
+                            {recentUser.email}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className='text-sm font-medium'>{user.username}</p>
-                        <p className='text-muted-foreground text-xs'>
-                          {user.email}
-                        </p>
+                      <div className='text-muted-foreground ml-3 shrink-0 text-xs'>
+                        {formatDateTime(recentUser.createdAt).split(' ')[0]}
                       </div>
                     </div>
-                    <div className='text-muted-foreground text-xs'>
-                      {formatDateTime(user.createdAt).split(' ')[0]}
-                    </div>
-                  </div>
-                )) || (
+                  ))
+                ) : (
                   <p className='text-muted-foreground py-4 text-center'>
                     暂无数据
                   </p>
@@ -519,10 +470,9 @@ export default function DashboardOverview() {
             </CardContent>
           </Card>
 
-          {/* 日志分布 */}
           <Card>
             <CardHeader>
-              <CardTitle>日志分布</CardTitle>
+              <CardTitle className='text-base'>日志分布</CardTitle>
               <CardDescription>按级别统计</CardDescription>
             </CardHeader>
             <CardContent>
@@ -551,10 +501,9 @@ export default function DashboardOverview() {
             </CardContent>
           </Card>
 
-          {/* 系统状态 */}
           <Card>
             <CardHeader>
-              <CardTitle>系统状态</CardTitle>
+              <CardTitle className='text-base'>系统状态</CardTitle>
               <CardDescription>运行状态监控</CardDescription>
             </CardHeader>
             <CardContent>
@@ -565,7 +514,7 @@ export default function DashboardOverview() {
                   </span>
                   <Badge
                     variant='default'
-                    className='bg-green-100 text-green-800'
+                    className='border border-[#32d6b4]/25 bg-[#32d6b4]/10 text-[#32d6b4]'
                   >
                     正常运行
                   </Badge>
@@ -575,23 +524,21 @@ export default function DashboardOverview() {
                     本周用户
                   </span>
                   <span className='font-medium'>
-                    {stats?.overview.weekUsers || 0}
+                    {overview?.weekUsers || 0}
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
                   <span className='text-muted-foreground text-sm'>
                     本周日志
                   </span>
-                  <span className='font-medium'>
-                    {stats?.overview.weekLogs || 0}
-                  </span>
+                  <span className='font-medium'>{overview?.weekLogs || 0}</span>
                 </div>
                 <div className='flex items-center justify-between'>
                   <span className='text-muted-foreground text-sm'>错误率</span>
                   <span
-                    className={`font-medium ${stats?.overview.errorLogs ? 'text-red-600' : 'text-green-600'}`}
+                    className={`font-medium ${overview?.errorLogs ? 'text-red-600' : 'text-emerald-600'}`}
                   >
-                    {stats?.overview.errorLogs ? '0.02%' : '0%'}
+                    {errorRate}%
                   </span>
                 </div>
               </div>

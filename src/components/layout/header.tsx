@@ -3,14 +3,14 @@ import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumbs } from './breadcrumbs';
-import { ModeToggle } from './mode-toggle';
 import SearchInput from './search-input';
 import SearchButton from './search-button';
+import { CircleDot } from 'lucide-react';
 
 export default function Header() {
   return (
-    <header className='bg-background/95 supports-[backdrop-filter]:bg-background/60 overflow-hidden border-b backdrop-blur md:rounded-t-xl'>
-      <div className='flex h-16 shrink-0 items-center gap-2'>
+    <header className='bg-background/90 supports-[backdrop-filter]:bg-background/75 sticky top-0 z-30 overflow-hidden border-b backdrop-blur-xl'>
+      <div className='flex h-14 shrink-0 items-center gap-2'>
         {/* 左侧：侧边栏触发器 + 面包屑 */}
         <div className='flex min-w-0 flex-1 items-center gap-2 px-3 sm:px-4'>
           <SidebarTrigger className='-ml-1' />
@@ -32,8 +32,10 @@ export default function Header() {
             <SearchButton />
           </div>
 
-          {/* 主题切换按钮 */}
-          <ModeToggle />
+          <div className='hidden items-center gap-2 border-l pl-3 text-xs text-white/45 lg:flex'>
+            <CircleDot className='size-3.5 text-[#32d6b4]' />
+            系统在线
+          </div>
         </div>
       </div>
     </header>

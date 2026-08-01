@@ -35,30 +35,27 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant='inset' {...props}>
+    <Sidebar variant='sidebar' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='#'>
-                <div className='relative'>
-                  <div className='bg-primary/10 absolute inset-0 rounded-lg blur-sm' />
-                  <div className='bg-background relative rounded-lg border p-1 shadow-lg'>
-                    <Image
-                      src='/logo.png'
-                      alt='Logo'
-                      width={24}
-                      height={24}
-                      className='dark:invert'
-                    />
-                  </div>
+              <a href='/dashboard/overview'>
+                <div className='flex size-8 items-center justify-center border border-white/15 bg-white/5'>
+                  <Image
+                    src='/logo.png'
+                    alt='Logo'
+                    width={22}
+                    height={22}
+                    className='invert'
+                  />
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>
+                  <span className='truncate font-semibold text-white'>
                     {siteConfig.name}
                   </span>
-                  <span className='truncate text-xs'>
-                    {siteConfig.description}
+                  <span className='truncate text-[10px] tracking-[0.14em] text-[#32d6b4] uppercase'>
+                    AI Operations
                   </span>
                 </div>
               </a>

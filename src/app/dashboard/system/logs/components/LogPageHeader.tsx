@@ -24,6 +24,7 @@ export function LogPageHeader({
 }: LogPageHeaderProps) {
   return (
     <PageHeader
+      eyebrow='Audit Trail'
       title='日志管理'
       description='查看和管理系统运行日志'
       action={{

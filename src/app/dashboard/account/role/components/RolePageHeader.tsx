@@ -11,6 +11,7 @@ interface RolePageHeaderProps {
 export function RolePageHeader({ onCreateRole }: RolePageHeaderProps) {
   return (
     <PageHeader
+      eyebrow='Access Control'
       title='角色管理'
       description='管理系统角色和权限'
       action={{

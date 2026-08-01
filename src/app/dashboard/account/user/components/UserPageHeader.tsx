@@ -14,6 +14,7 @@ interface UserPageHeaderProps {
 export function UserPageHeader({ onCreateUser }: UserPageHeaderProps) {
   return (
     <PageHeader
+      eyebrow='Identity Control'
       title='用户管理'
       description='管理系统用户账户和权限'
       action={{

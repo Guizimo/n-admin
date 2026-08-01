@@ -44,7 +44,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --font-geist-sans: Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-geist-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   --card: oklch(1 0 0);
@@ -112,6 +112,66 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+.dashboard-shell {
+  --radius: 0.125rem;
+  --background: #111416;
+  --foreground: #f5f6f2;
+  --card: #171b1c;
+  --card-foreground: #f5f6f2;
+  --popover: #171b1c;
+  --popover-foreground: #f5f6f2;
+  --primary: #f5f6f2;
+  --primary-foreground: #111416;
+  --secondary: #202526;
+  --secondary-foreground: #f5f6f2;
+  --muted: #202526;
+  --muted-foreground: #8b9693;
+  --accent: #f5f6f2;
+  --accent-foreground: #111416;
+  --destructive: #ff725e;
+  --border: rgb(255 255 255 / 12%);
+  --input: rgb(255 255 255 / 16%);
+  --ring: #32d6b4;
+  --chart-1: #32d6b4;
+  --chart-2: #f2c94c;
+  --chart-3: #ff725e;
+  --chart-4: #78a8ff;
+  --chart-5: #c8a8ff;
+  --sidebar: #111416;
+  --sidebar-foreground: #8b9693;
+  --sidebar-primary: #f5f6f2;
+  --sidebar-primary-foreground: #111416;
+  --sidebar-accent: rgb(255 255 255 / 7%);
+  --sidebar-accent-foreground: #f5f6f2;
+  --sidebar-border: rgb(255 255 255 / 12%);
+  --sidebar-ring: #32d6b4;
+}
+
+.dashboard-shell [data-slot='card'],
+.dashboard-shell [data-slot='button'],
+.dashboard-shell [data-slot='badge'],
+.dashboard-shell [data-slot='select-trigger'],
+.dashboard-shell [data-slot='input'] {
+  border-radius: 0;
+}
+
+.dashboard-shell [data-slot='card'] {
+  box-shadow: none;
+}
+
+.dashboard-shell [data-sidebar='menu-button'][data-active='true'],
+.dashboard-shell [data-sidebar='menu-sub-button'][data-active='true'] {
+  background: #f5f6f2;
+  color: #111416;
+}
+
+.dashboard-shell [data-sidebar='group-label'] {
+  color: rgb(255 255 255 / 32%);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 @layer base {
