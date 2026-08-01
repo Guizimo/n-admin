@@ -4,6 +4,29 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [0.4.0](https://github.com/guizimo/n-admin/compare/v0.3.1...v0.4.0) (2026-08-01)
+
+
+### 📚 文档更新
+
+* avoid stale release version ([85697d7](https://github.com/guizimo/n-admin/commit/85697d7f6b0d4e0f4069383879cf5c0f25cc193d))
+
+
+### 🐛 Bug 修复
+
+* support TiDB database connections ([36a4199](https://github.com/guizimo/n-admin/commit/36a41991e1dbca5ff52380933e675799cfd18e69))
+
+
+### ⚡ 性能优化
+
+* reduce dashboard database queries ([74b77db](https://github.com/guizimo/n-admin/commit/74b77db57b39a1039a53a7a85a840b85ff7906f2))
+
+
+### ✨ 新增功能
+
+* align dashboard with brand console theme ([e944eb0](https://github.com/guizimo/n-admin/commit/e944eb06dd01ebd1bb4677d0d09f336458361a18))
+* refine dashboard management interfaces ([d74721e](https://github.com/guizimo/n-admin/commit/d74721ec9f4594c5350314c03576c2e6da621d65))
+
 ### [0.3.1](https://github.com/guizimo/n-admin/compare/v0.3.0...v0.3.1) (2026-07-29)
 
 
