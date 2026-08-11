@@ -1,12 +1,7 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose
-} from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { UserCog, UserRoundPlus } from 'lucide-react';
+import { ManagementDialogHeader } from '@/components/shared/management-form';
 import { UserForm } from './UserForm';
 import { UserFormData, UserDialogState } from '../types';
 
@@ -58,26 +53,29 @@ export function UserDialogs({
     }
   };
 
+  const isCreateMode = type === 'create';
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className='flex max-w-lg flex-col p-0'>
-        <DialogHeader className='relative shrink-0 border-b px-6 py-4'>
-          <DialogTitle>{getDialogTitle()}</DialogTitle>
-          <DialogClose className='ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none'>
-            <X className='h-4 w-4' />
-            <span className='sr-only'>关闭</span>
-          </DialogClose>
-        </DialogHeader>
+      <DialogContent className='flex max-h-[calc(100vh-2rem)] w-[calc(100%-1rem)] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:w-full'>
+        <ManagementDialogHeader
+          eyebrow='Identity Control'
+          title={getDialogTitle()}
+          description={
+            isCreateMode
+              ? '建立账号并配置初始角色与访问状态'
+              : '更新账号资料、角色与访问状态'
+          }
+          icon={isCreateMode ? UserRoundPlus : UserCog}
+        />
 
-        <div className='px-6 py-4'>
-          {open && (
-            <UserForm
-              initialData={type === 'edit' ? user : undefined}
-              onSubmit={handleSubmit}
-              onCancel={onClose}
-            />
-          )}
-        </div>
+        {open && (
+          <UserForm
+            initialData={type === 'edit' ? user || undefined : undefined}
+            onSubmit={handleSubmit}
+            onCancel={onClose}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

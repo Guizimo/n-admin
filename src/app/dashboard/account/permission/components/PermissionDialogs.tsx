@@ -1,14 +1,9 @@
 'use client';
 
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose
-} from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { KeyRound, ShieldPlus } from 'lucide-react';
+import { ManagementDialogHeader } from '@/components/shared/management-form';
 import { PermissionForm } from './PermissionForm';
 import type { PermissionDialogState, PermissionFormData } from '../types';
 
@@ -47,23 +42,26 @@ export function PermissionDialogs({
     }
   };
 
+  const isCreateMode = type === 'create';
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className='flex max-w-md flex-col p-0'>
-        <DialogHeader className='relative shrink-0 border-b px-6 py-4'>
-          <DialogTitle>{getDialogTitle()}</DialogTitle>
-          <DialogClose className='ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none'>
-            <X className='h-4 w-4' />
-            <span className='sr-only'>关闭</span>
-          </DialogClose>
-        </DialogHeader>
-        <div className='px-6 py-4'>
-          <PermissionForm
-            initialData={permission || undefined}
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-          />
-        </div>
+      <DialogContent className='flex max-h-[calc(100vh-2rem)] w-[calc(100%-1rem)] max-w-lg flex-col gap-0 overflow-hidden p-0 sm:w-full'>
+        <ManagementDialogHeader
+          eyebrow='Policy Control'
+          title={getDialogTitle()}
+          description={
+            isCreateMode
+              ? '定义可分配给角色的最小访问能力'
+              : '更新权限名称、标识与审计说明'
+          }
+          icon={isCreateMode ? ShieldPlus : KeyRound}
+        />
+        <PermissionForm
+          initialData={permission || undefined}
+          onSubmit={handleSubmit}
+          onCancel={onClose}
+        />
       </DialogContent>
     </Dialog>
   );

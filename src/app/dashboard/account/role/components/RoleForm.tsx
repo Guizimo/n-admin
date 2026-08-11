@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ManagementFormField } from '@/components/shared/management-form';
 import type { RoleFormData } from '../types';
 
 interface RoleFormProps {
@@ -21,39 +21,40 @@ export function RoleForm({ data, onChange, errors = {} }: RoleFormProps) {
   };
 
   return (
-    <div className='space-y-4'>
-      <div className='space-y-2'>
-        <Label htmlFor='name' className='text-sm font-medium'>
-          角色名称 <span className='text-destructive'>*</span>
-        </Label>
+    <div className='grid gap-4'>
+      <ManagementFormField
+        htmlFor='name'
+        label='角色名称'
+        required
+        error={errors.name}
+      >
         <Input
           id='name'
           placeholder='请输入角色名称'
           value={data.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className={`h-9 cursor-pointer ${errors.name ? 'border-destructive' : ''}`}
+          maxLength={50}
+          aria-invalid={Boolean(errors.name)}
+          className='h-10 bg-black/20'
         />
-        {errors.name && (
-          <p className='text-destructive text-sm'>{errors.name}</p>
-        )}
-      </div>
+      </ManagementFormField>
 
-      <div className='space-y-2'>
-        <Label htmlFor='description' className='text-sm font-medium'>
-          描述
-        </Label>
+      <ManagementFormField
+        htmlFor='description'
+        label='角色说明'
+        error={errors.description}
+      >
         <Textarea
           id='description'
           placeholder='请输入角色描述'
           value={data.description || ''}
           onChange={(e) => handleChange('description', e.target.value)}
           rows={3}
-          className={`cursor-pointer resize-none ${errors.description ? 'border-destructive' : ''}`}
+          maxLength={255}
+          aria-invalid={Boolean(errors.description)}
+          className='min-h-24 resize-none bg-black/20'
         />
-        {errors.description && (
-          <p className='text-destructive text-sm'>{errors.description}</p>
-        )}
-      </div>
+      </ManagementFormField>
     </div>
   );
 }

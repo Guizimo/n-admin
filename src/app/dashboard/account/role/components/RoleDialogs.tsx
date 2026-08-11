@@ -2,18 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { BadgeCheck, BadgePlus, Save, X } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+  ManagementDialogFooter,
+  ManagementDialogHeader
+} from '@/components/shared/management-form';
 import { RoleForm } from './RoleForm';
-import type { RoleDialogState, RoleFormData, Role } from '../types';
-import { MESSAGES } from '../constants';
+import type { RoleDialogState, RoleFormData } from '../types';
 
 interface RoleDialogsProps {
   dialogState: RoleDialogState;
@@ -76,7 +72,8 @@ export function RoleDialogs({
   };
 
   // 提交处理
-  const handleSubmit = async () => {
+  const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
     if (!validateForm()) return;
 
     let success = false;
@@ -94,42 +91,52 @@ export function RoleDialogs({
 
   const isCreateMode = dialogState.type === 'create';
   const title = isCreateMode ? '新增角色' : '编辑角色';
-  const submitText = isCreateMode ? '创建' : '保存';
+  const submitText = isCreateMode ? '创建角色' : '保存更改';
 
   return (
     <Dialog open={dialogState.open} onOpenChange={onClose}>
-      <DialogContent className='flex max-w-[425px] flex-col p-0'>
-        <DialogHeader className='relative shrink-0 border-b px-6 py-4'>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogClose className='ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none'>
-            <X className='h-4 w-4' />
-            <span className='sr-only'>关闭</span>
-          </DialogClose>
-        </DialogHeader>
+      <DialogContent className='flex max-h-[calc(100vh-2rem)] w-[calc(100%-1rem)] max-w-lg flex-col gap-0 overflow-hidden p-0 sm:w-full'>
+        <ManagementDialogHeader
+          eyebrow='Access Control'
+          title={title}
+          description={
+            isCreateMode
+              ? '建立职责边界，后续可为角色分配最小权限'
+              : '更新角色名称与职责说明'
+          }
+          icon={isCreateMode ? BadgePlus : BadgeCheck}
+        />
 
-        <div className='px-6 py-4'>
-          <RoleForm data={formData} onChange={setFormData} errors={errors} />
-        </div>
+        <form onSubmit={handleSubmit} className='flex min-h-0 flex-1 flex-col'>
+          <div className='min-h-0 overflow-y-auto px-5 py-5 sm:px-6'>
+            <RoleForm data={formData} onChange={setFormData} errors={errors} />
+          </div>
 
-        <DialogFooter className='border-t px-6 py-4'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={onClose}
-            disabled={loading}
-            className='cursor-pointer'
-          >
-            取消
-          </Button>
-          <Button
-            type='button'
-            onClick={handleSubmit}
-            disabled={loading}
-            className='cursor-pointer'
-          >
-            {loading ? '处理中...' : submitText}
-          </Button>
-        </DialogFooter>
+          <ManagementDialogFooter>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={onClose}
+              disabled={loading}
+              className='h-10 w-full cursor-pointer sm:w-auto sm:min-w-24'
+            >
+              <X className='size-4' aria-hidden='true' />
+              取消
+            </Button>
+            <Button
+              type='submit'
+              disabled={loading}
+              className='h-10 w-full cursor-pointer sm:w-auto sm:min-w-28'
+            >
+              {isCreateMode ? (
+                <BadgePlus className='size-4' aria-hidden='true' />
+              ) : (
+                <Save className='size-4' aria-hidden='true' />
+              )}
+              {loading ? '处理中...' : submitText}
+            </Button>
+          </ManagementDialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

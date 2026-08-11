@@ -153,7 +153,11 @@
 .dashboard-shell [data-slot='button'],
 .dashboard-shell [data-slot='badge'],
 .dashboard-shell [data-slot='select-trigger'],
-.dashboard-shell [data-slot='input'] {
+.dashboard-shell [data-slot='select-content'],
+.dashboard-shell [data-slot='input'],
+.dashboard-shell [data-slot='textarea'],
+.dashboard-shell [data-slot='checkbox'],
+.dashboard-shell[data-slot='dialog-content'] {
   border-radius: 0;
 }
 
