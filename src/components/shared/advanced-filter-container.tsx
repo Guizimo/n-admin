@@ -6,17 +6,19 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogFooter
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
+  DrawerDescription,
   DrawerFooter,
-  DrawerClose
+  DrawerHeader,
+  DrawerClose,
+  DrawerTitle
 } from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -109,23 +111,39 @@ export function AdvancedFilterContainer({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <DrawerContent className='max-h-[90vh]'>
-          <DrawerHeader className='text-left'>
-            <DrawerTitle>{title}</DrawerTitle>
+        <DrawerContent className='dashboard-shell dark border-border bg-background text-foreground max-h-[90vh] rounded-none'>
+          <DrawerHeader className='border-border relative border-b px-5 py-4 text-left'>
+            <div className='flex items-center gap-3 pr-10'>
+              <div className='border-border bg-muted/30 text-primary flex size-9 shrink-0 items-center justify-center border'>
+                <Search className='size-4' />
+              </div>
+              <div className='min-w-0'>
+                <p className='text-primary text-[10px] font-semibold uppercase'>
+                  Query Builder
+                </p>
+                <DrawerTitle className='text-lg'>{title}</DrawerTitle>
+                <DrawerDescription className='sr-only'>
+                  设置筛选条件
+                </DrawerDescription>
+              </div>
+            </div>
             <DrawerClose asChild>
               <Button
                 variant='ghost'
                 size='sm'
-                className='absolute top-4 right-4 h-8 w-8 p-0'
+                className='border-border absolute top-4 right-4 size-8 border p-0'
               >
                 <X className='h-4 w-4' />
+                <span className='sr-only'>关闭</span>
               </Button>
             </DrawerClose>
           </DrawerHeader>
 
-          <div className='flex-1 overflow-y-auto px-4 pb-4'>{children}</div>
+          <div className='flex-1 overflow-y-auto p-5'>{children}</div>
 
-          <DrawerFooter>{renderActions()}</DrawerFooter>
+          <DrawerFooter className='border-border bg-muted/20 border-t p-4'>
+            {renderActions()}
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     );
@@ -134,14 +152,29 @@ export function AdvancedFilterContainer({
   // PC端使用 Dialog
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className='flex max-h-[90vh] flex-col sm:max-w-2xl'>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent className='flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-2xl'>
+        <DialogHeader className='border-border border-b px-5 py-4 text-left'>
+          <div className='flex items-center gap-3 pr-10'>
+            <div className='border-border bg-muted/30 text-primary flex size-9 shrink-0 items-center justify-center border'>
+              <Search className='size-4' />
+            </div>
+            <div className='min-w-0'>
+              <p className='text-primary text-[10px] font-semibold uppercase'>
+                Query Builder
+              </p>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription className='sr-only'>
+                设置筛选条件
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
-        <div className='flex-1 overflow-y-auto px-1'>{children}</div>
+        <div className='flex-1 overflow-y-auto p-5'>{children}</div>
 
-        <DialogFooter>{renderActions()}</DialogFooter>
+        <DialogFooter className='border-border bg-muted/20 border-t px-5 py-4'>
+          {renderActions()}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

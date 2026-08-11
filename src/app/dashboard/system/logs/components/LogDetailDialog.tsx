@@ -9,15 +9,14 @@ import {
   User,
   Globe,
   Clock,
-  Hash,
-  X
+  Hash
 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
-  DialogTitle,
-  DialogClose
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 
@@ -69,15 +68,14 @@ export function LogDetailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='flex max-h-[80vh] max-w-4xl flex-col overflow-hidden p-0'>
-        <DialogHeader className='bg-background relative sticky top-0 z-10 shrink-0 border-b px-6 py-4'>
+        <DialogHeader className='bg-background relative sticky top-0 z-10 shrink-0 border-b px-6 py-4 pr-16'>
           <DialogTitle className='flex items-center gap-2'>
             <LevelIcon className='h-5 w-5' />
             日志详情 #{log.id}
           </DialogTitle>
-          <DialogClose className='ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none'>
-            <X className='h-4 w-4' />
-            <span className='sr-only'>关闭</span>
-          </DialogClose>
+          <DialogDescription className='sr-only'>
+            查看日志事件、请求与用户上下文
+          </DialogDescription>
         </DialogHeader>
 
         <div className='flex-1 overflow-y-auto px-6 py-4'>
