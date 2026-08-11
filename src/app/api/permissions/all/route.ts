@@ -1,8 +1,16 @@
 import { db } from '@/db';
 import { permissions } from '@/db/schema';
 import { errorResponse, successResponse } from '@/service/response';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.ASSIGN
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     // 获取所有权限数据，按sortOrder排序
     const allPermissions = await db

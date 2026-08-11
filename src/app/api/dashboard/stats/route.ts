@@ -2,8 +2,12 @@ import { db } from '@/db';
 import { users, roles, permissions, systemLogs } from '@/db/schema';
 import { count, sql, desc, gte } from 'drizzle-orm';
 import { successResponse, errorResponse } from '@/service/response';
+import { authorizeApiRequest } from '@/lib/api-authorization';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authorization = await authorizeApiRequest(request);
+  if (!authorization.authorized) return authorization.response;
+
   try {
     // 获取当前时间的各个时间点
     const now = new Date();

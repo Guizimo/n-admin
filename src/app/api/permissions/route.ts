@@ -1,9 +1,17 @@
 import { db } from '@/db';
 import { permissions } from '@/db/schema';
 import { like, and, gte, lte, count } from 'drizzle-orm';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: Request) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.PERMISSION.READ
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name');
@@ -90,6 +98,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.PERMISSION.CREATE
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const body = await request.json();
     const { name, code, description } = body;

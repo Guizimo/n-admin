@@ -2,7 +2,8 @@ import { db } from '@/db';
 import { rolePermissions, permissions, roles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
-import { getCurrentUser } from '@/lib/auth';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import { errorResponse, successResponse } from '@/service/response';
 
 // 获取角色的权限列表
@@ -10,6 +11,12 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.ASSIGN
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const { id } = await params;
 
@@ -36,8 +43,14 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('权限管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.ASSIGN
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('权限管理', currentUser.id);
 
   try {
     const { id } = await params;

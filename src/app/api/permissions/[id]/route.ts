@@ -2,11 +2,19 @@ import { db } from '@/db';
 import { permissions } from '@/db/schema';
 import { errorResponse, successResponse } from '@/service/response';
 import { eq } from 'drizzle-orm';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.PERMISSION.UPDATE
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -27,6 +35,12 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.PERMISSION.DELETE
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const { id } = await params;
 

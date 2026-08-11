@@ -2,10 +2,17 @@ import { db } from '@/db';
 import { roles, users } from '@/db/schema';
 import { like, and, gte, lte, count, eq, sql } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
-import { getCurrentUser } from '@/lib/auth';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: Request) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.READ
+  );
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name');
@@ -90,8 +97,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('角色管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.CREATE
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('角色管理', currentUser.id);
 
   try {
     const body = await request.json();

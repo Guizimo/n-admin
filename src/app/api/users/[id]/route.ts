@@ -7,7 +7,8 @@ import {
   preventSuperAdminDisable
 } from '@/lib/super-admin';
 import { Logger } from '@/lib/logger';
-import { getCurrentUser } from '@/lib/auth';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import {
   successResponse,
   errorResponse,
@@ -18,8 +19,14 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('用户管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.USER.UPDATE
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('用户管理', currentUser.id);
 
   try {
     const { id: idStr } = await params;
@@ -120,8 +127,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('用户管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.USER.DELETE
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('用户管理', currentUser.id);
 
   try {
     const { id: idStr } = await params;

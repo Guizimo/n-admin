@@ -2,21 +2,18 @@ import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { systemLogs, users } from '@/db/schema';
 import { desc, eq, like, and, gte, lte, count } from 'drizzle-orm';
-import { getUserFromRequest } from '@/lib/server-permissions';
-import {
-  successResponse,
-  errorResponse,
-  unauthorizedResponse
-} from '@/service/response';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
+import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: NextRequest) {
-  try {
-    // 检查用户权限
-    const userId = await getUserFromRequest();
-    if (!userId) {
-      return unauthorizedResponse('未授权');
-    }
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.LOG.READ
+  );
+  if (!authorization.authorized) return authorization.response;
 
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -101,13 +98,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  try {
-    // 检查用户权限
-    const userId = await getUserFromRequest();
-    if (!userId) {
-      return unauthorizedResponse('未授权');
-    }
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.LOG.DELETE
+  );
+  if (!authorization.authorized) return authorization.response;
 
+  try {
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '30');
 

@@ -1,18 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { systemLogs } from '@/db/schema';
 import { count, eq, sql, gte } from 'drizzle-orm';
-import { getUserFromRequest } from '@/lib/server-permissions';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import { errorResponse, successResponse } from '@/service/response';
 
 export async function GET(request: NextRequest) {
-  try {
-    // 检查用户权限
-    const userId = await getUserFromRequest();
-    if (!userId) {
-      return NextResponse.json({ error: '未授权' }, { status: 401 });
-    }
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.LOG.READ
+  );
+  if (!authorization.authorized) return authorization.response;
 
+  try {
     // 获取今天的开始时间
     const today = new Date();
     today.setHours(0, 0, 0, 0);

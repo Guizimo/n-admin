@@ -3,15 +3,22 @@ import { roles } from '@/db/schema';
 import { preventSuperRoleModification } from '@/lib/super-admin';
 import { eq } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
-import { getCurrentUser } from '@/lib/auth';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
 import { errorResponse, successResponse } from '@/service/response';
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('角色管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.UPDATE
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('角色管理', currentUser.id);
 
   try {
     const { id: idStr } = await params;
@@ -75,8 +82,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const currentUser = getCurrentUser(request);
-  const logger = new Logger('角色管理', currentUser?.id);
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.ROLE.DELETE
+  );
+  if (!authorization.authorized) return authorization.response;
+
+  const currentUser = authorization.user;
+  const logger = new Logger('角色管理', currentUser.id);
 
   try {
     const { id: idStr } = await params;
