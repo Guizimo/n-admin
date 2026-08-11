@@ -11,7 +11,8 @@ import {
   LogFilters,
   LogTable,
   LogPageHeader,
-  LogDetailDialog
+  LogDetailDialog,
+  LogStatsBar
 } from './components';
 import { useLogFilters, useLogManagement } from './hooks';
 import { PAGE_SIZE_OPTIONS } from './constants';
@@ -28,10 +29,12 @@ export default function LogsPage() {
 
   const {
     logs,
+    stats,
     loading,
     pagination,
     dialogState,
     fetchLogs,
+    fetchLogStats,
     refreshLogs,
     openDetailDialog,
     closeDialog
@@ -41,6 +44,10 @@ export default function LogsPage() {
   useEffect(() => {
     fetchLogs(filters);
   }, [filters, fetchLogs]);
+
+  useEffect(() => {
+    fetchLogStats();
+  }, [fetchLogStats]);
 
   // 处理查询
   const handleSearch = (newFilters: any) => {
@@ -77,6 +84,8 @@ export default function LogsPage() {
             onRefresh={handleRefresh}
             loading={loading}
           />
+
+          <LogStatsBar stats={stats} />
 
           {/* 搜索和筛选 */}
           <LogFilters

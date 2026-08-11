@@ -18,6 +18,7 @@ import { LogAPI } from '@/service/request';
  */
 export function useLogManagement() {
   const [logs, setLogs] = useState<LogItem[]>([]);
+  const [stats, setStats] = useState<LogStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] =
     useState<PaginationInfo>(DEFAULT_PAGINATION);
@@ -80,24 +81,23 @@ export function useLogManagement() {
 
   /**
    * 获取日志统计信息
-   * TODO: 实现LogAPI.getLogStats方法
    */
   const fetchLogStats = useCallback(async (): Promise<LogStats | null> => {
     try {
-      // const res = await LogAPI.getLogStats();
-      // if (res.code === 0) {
-      //   return res.data;
-      // } else {
-      //   toast.error(res.message || MESSAGES.ERROR.FETCH_STATS);
-      //   return null;
-      // }
+      const res = await LogAPI.getLogStats();
+      if (res.code === 0) {
+        const nextStats = res.data || null;
+        setStats(nextStats);
+        return nextStats;
+      }
 
-      // 临时返回null，等待API实现
-      console.warn('LogAPI.getLogStats 方法尚未实现');
+      toast.error(res.message || MESSAGES.ERROR.FETCH_STATS);
+      setStats(null);
       return null;
     } catch (error) {
       console.error('获取统计信息失败:', error);
       toast.error(MESSAGES.ERROR.FETCH_STATS);
+      setStats(null);
       return null;
     }
   }, []);
@@ -107,10 +107,10 @@ export function useLogManagement() {
    */
   const refreshLogs = useCallback(
     async (filters: LogFilters) => {
-      await fetchLogs(filters);
+      await Promise.all([fetchLogs(filters), fetchLogStats()]);
       toast.success(MESSAGES.SUCCESS.REFRESH);
     },
-    [fetchLogs]
+    [fetchLogs, fetchLogStats]
   );
 
   /**
@@ -138,6 +138,7 @@ export function useLogManagement() {
   return {
     // 状态
     logs,
+    stats,
     loading,
     pagination,
     dialogState,

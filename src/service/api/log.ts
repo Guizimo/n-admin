@@ -12,4 +12,8 @@ export class LogAPI {
     const searchParams = buildSearchParams(params || {});
     return apiRequest(`/logs${searchParams ? `?${searchParams}` : ''}`);
   }
+
+  static async getLogStats() {
+    return apiRequest('/logs/stats');
+  }
 }
