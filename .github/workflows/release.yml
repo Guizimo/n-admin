@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Get version changelog
         id: get_changelog
         run: |
@@ -29,23 +29,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: '10'
-          
+          version: '9.15.0'
+
       - name: Install Dependencies
-        run: pnpm install
-        
+        run: pnpm install --frozen-lockfile
+
       - name: Build
         run: pnpm build
-        
+
       - name: Create release archive
         run: |
           # 创建发布目录
           mkdir -p release
-          
+
           # 只复制生产部署必需的文件
           cp -r .next release/              # 构建产物(必需)
           cp -r public release/             # 静态资源(必需)
@@ -53,40 +53,40 @@ jobs:
           cp pnpm-lock.yaml release/        # 版本锁定(必需)
           cp next.config.ts release/        # Next.js配置(必需)
           cp README.md release/             # 项目说明
-          
+
           # 数据库相关(如果需要)
           if [ -d "drizzle" ]; then
             cp -r drizzle release/
             cp drizzle.config.ts release/
           fi
-          
+
           # 环境变量模板(如果存在)
           if [ -f ".env.example" ]; then
             cp .env.example release/
           fi
-          
+
           # 创建简洁的部署说明
           cat > release/DEPLOYMENT.md << 'EOF'
           # 快速部署
-          
+
           ## 环境要求
           - Node.js >= 18
           - pnpm >= 8
-          
+
           ## 部署步骤
           1. 解压到服务器
           2. 安装依赖: `pnpm install --prod`
           3. 配置 .env 文件 (数据库连接、JWT_SECRET等)
           4. 启动: `pnpm start`
-          
+
           生产环境建议使用 PM2: `pm2 start "pnpm start" --name n-admin`
           EOF
-          
+
           # 创建压缩包
           cd release
           zip -r ../n-admin.zip .
           cd ..
-        
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
