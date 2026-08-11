@@ -110,7 +110,7 @@ export default function Page() {
         </div>
 
         <div className='relative z-10 flex items-center justify-between px-10 py-8 text-[11px] text-white/30 xl:px-14'>
-          <span>N Admin v0.3.0</span>
+          <span>N Admin v0.4.0</span>
           <span>Explainable · Auditable · Actionable</span>
         </div>
       </section>
