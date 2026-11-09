@@ -31,7 +31,7 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: '9.15.0'
 
@@ -40,49 +40,19 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          JWT_SECRET: release-only-secret-for-build-validation
 
       - name: Create release archive
         run: |
-          # 创建发布目录
           mkdir -p release
+          cp -r .next/standalone/. release/
+          mkdir -p release/.next
+          cp -r .next/static release/.next/static
+          cp -r public release/public
+          cp -r drizzle release/drizzle
+          cp .env.example DEPLOYMENT.md README.md README.en.md release/
 
-          # 只复制生产部署必需的文件
-          cp -r .next release/              # 构建产物(必需)
-          cp -r public release/             # 静态资源(必需)
-          cp package.json release/          # 依赖定义(必需)
-          cp pnpm-lock.yaml release/        # 版本锁定(必需)
-          cp next.config.ts release/        # Next.js配置(必需)
-          cp README.md release/             # 项目说明
-
-          # 数据库相关(如果需要)
-          if [ -d "drizzle" ]; then
-            cp -r drizzle release/
-            cp drizzle.config.ts release/
-          fi
-
-          # 环境变量模板(如果存在)
-          if [ -f ".env.example" ]; then
-            cp .env.example release/
-          fi
-
-          # 创建简洁的部署说明
-          cat > release/DEPLOYMENT.md << 'EOF'
-          # 快速部署
-
-          ## 环境要求
-          - Node.js >= 18
-          - pnpm >= 8
-
-          ## 部署步骤
-          1. 解压到服务器
-          2. 安装依赖: `pnpm install --prod`
-          3. 配置 .env 文件 (数据库连接、JWT_SECRET等)
-          4. 启动: `pnpm start`
-
-          生产环境建议使用 PM2: `pm2 start "pnpm start" --name n-admin`
-          EOF
-
-          # 创建压缩包
           cd release
           zip -r ../n-admin.zip .
           cd ..

@@ -115,6 +115,8 @@ See [.env.example](.env.example) for a complete example.
 | `pnpm build`       | Create a production build                                  |
 | `pnpm start`       | Start the production server                                |
 | `pnpm lint`        | Run ESLint                                                 |
+| `pnpm typecheck`   | Run TypeScript type checking                               |
+| `pnpm test`        | Run automated tests                                        |
 | `pnpm db:generate` | Generate database migrations                               |
 | `pnpm db:push`     | Synchronize the schema with the database                   |
 | `pnpm db:studio`   | Start Drizzle Studio                                       |
@@ -140,6 +142,8 @@ src/
 ## Deployment
 
 Vercel is the recommended deployment target. Import the GitHub repository, configure the environment variables from `.env.example`, and make sure the deployment environment can access MySQL. Pushes to the production branch will then build and deploy automatically.
+
+Before the first deployment, and for releases containing schema changes, run `pnpm db:push` and `pnpm init:admin`. See the [deployment guide](DEPLOYMENT.md) for the complete workflow.
 
 For other deployment environments, run:
 

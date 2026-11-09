@@ -115,6 +115,8 @@ pnpm dev
 | `pnpm build`       | 构建生产版本                 |
 | `pnpm start`       | 启动生产服务器               |
 | `pnpm lint`        | 运行 ESLint                  |
+| `pnpm typecheck`   | 运行 TypeScript 类型检查     |
+| `pnpm test`        | 运行自动化测试               |
 | `pnpm db:generate` | 生成数据库迁移               |
 | `pnpm db:push`     | 将 Schema 同步到数据库       |
 | `pnpm db:studio`   | 启动 Drizzle Studio          |
@@ -140,6 +142,8 @@ src/
 ## 部署
 
 推荐使用 Vercel：将 GitHub 仓库导入 Vercel，配置与 `.env.example` 对应的环境变量，并确保部署环境能够访问 MySQL。推送到生产分支后即可自动构建和发布。
+
+首次发布和包含 Schema 变更的版本需先执行 `pnpm db:push` 和 `pnpm init:admin`。完整步骤见 [部署指南](DEPLOYMENT.md)。
 
 其他部署环境可执行：
 

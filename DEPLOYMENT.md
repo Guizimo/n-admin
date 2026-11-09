@@ -1,189 +1,120 @@
-# 部署指南
+# N Admin 部署指南
 
-本项目是一个基于 Next.js 的管理后台系统，支持多种部署方式。
+N Admin 基于 Next.js 16，使用 MySQL 协议数据库和 Drizzle ORM。推荐的生产组合是 Vercel + TiDB Cloud Starter，也可部署到任何支持 Node.js 的服务器。
 
-## 🚀 本地开发
+## 环境要求
 
-### 环境要求
+- Node.js 20.9 或更高版本
+- pnpm 9.15
+- MySQL 8+ 或 TiDB Cloud Starter
 
-- Node.js 18.x 或更高版本
-- pnpm 包管理器
-- PostgreSQL 数据库
-
-### 开发流程
+## 本地开发
 
 ```bash
-# 1. 安装依赖
-pnpm install
-
-# 2. 环境配置
+pnpm install --frozen-lockfile
 cp .env.example .env.local
-# 编辑 .env.local，配置数据库连接等环境变量
-
-# 3. 数据库设置
-pnpm db:generate  # 生成数据库迁移文件
-pnpm db:push      # 推送数据库结构
-pnpm init:admin   # 初始化管理员账户
-
-# 4. 启动开发服务器
+pnpm db:push
+pnpm init:admin
 pnpm dev
 ```
 
-## 🛠️ 生产部署
+修改 `.env.local` 中的数据库、JWT 和初始管理员配置。不要将真实凭据提交到 Git。
 
-### 1. Vercel 部署（推荐）
+## Vercel + TiDB Cloud
 
-#### 自动部署
+### 1. 创建数据库
 
-1. 连接你的 GitHub 仓库到 Vercel
-2. 配置环境变量
-3. 推送代码，自动部署
+在 TiDB Cloud Starter 中创建 Cluster 和数据库，然后在 Connect 页面获取 Host、Port、Username 和 Password。生产环境建议单独创建应用用户，不要使用 Root 账户。
 
-#### 手动部署
+将 TiDB Cloud 的 Network Access 设置为允许 Vercel 访问。Vercel 函数默认不保证固定出口 IP，使用 IP 白名单时需选择与当前 Vercel 方案兼容的网络配置。
 
-```bash
-# 安装 Vercel CLI
-npm i -g vercel
+### 2. 配置 Vercel 环境变量
 
-# 登录并部署
-vercel
+在 Project Settings > Environment Variables 中配置：
+
+```dotenv
+DATABASE_HOST=gateway01.<region>.prod.aws.tidbcloud.com
+DATABASE_PORT=4000
+DATABASE_USERNAME=<username>
+DATABASE_PASSWORD=<password>
+DATABASE_NAME=n_admin
+DATABASE_SSL=true
+DATABASE_SSL_REJECT_UNAUTHORIZED=true
+
+JWT_SECRET=<at-least-32-random-characters>
+
+ADMIN_EMAIL=admin@example.com
+ADMIN_USERNAME=Administrator
+ADMIN_PASSWORD=<strong-initial-password>
+SALT_ROUNDS=12
 ```
 
-### 2. Docker 部署
+`JWT_SECRET` 可使用 `openssl rand -base64 48` 生成。生产环境不应使用 `.env.example` 中的示例值。
+
+### 3. 初始化 Schema 和管理员
+
+Vercel 的普通构建流程不适合自动修改生产数据库。在可信任的本地终端或受控 CI 环境中加载生产环境变量，然后执行：
 
 ```bash
-# 构建镜像
-docker build -t n-admin .
-
-# 运行容器
-docker run -p 3000:3000 -e DATABASE_URL="your_database_url" n-admin
-```
-
-### 3. 传统服务器部署
-
-```bash
-# 1. 构建应用
-pnpm build
-
-# 2. 启动生产服务器
-pnpm start
-```
-
-## 📋 环境变量配置
-
-创建 `.env.local` 文件并配置以下变量：
-
-```bash
-# 数据库配置
-DATABASE_URL="postgresql://username:password@localhost:5432/n_admin"
-
-# JWT 密钥
-JWT_SECRET="your-jwt-secret-key"
-JWT_REFRESH_SECRET="your-jwt-refresh-secret-key"
-
-# 应用配置
-NEXT_PUBLIC_APP_NAME="N-Admin"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
-# 邮件配置（可选）
-EMAIL_FROM="noreply@yourdomain.com"
-SMTP_HOST="smtp.yourdomain.com"
-SMTP_PORT="587"
-SMTP_USER="your-smtp-user"
-SMTP_PASSWORD="your-smtp-password"
-```
-
-## 🗄️ 数据库设置
-
-### PostgreSQL 设置
-
-1. **安装 PostgreSQL**
-2. **创建数据库**：
-
-   ```sql
-   CREATE DATABASE n_admin;
-   CREATE USER n_admin_user WITH PASSWORD 'your_password';
-   GRANT ALL PRIVILEGES ON DATABASE n_admin TO n_admin_user;
-   ```
-
-3. **运行迁移**：
-
-   ```bash
-   pnpm db:generate
-   pnpm db:push
-   ```
-
-4. **初始化管理员**：
-   ```bash
-   pnpm init:admin
-   ```
-
-### 数据库命令
-
-```bash
-# 生成迁移文件
-pnpm db:generate
-
-# 推送数据库结构更改
+pnpm install --frozen-lockfile
 pnpm db:push
-
-# 重置数据库（谨慎使用）
-pnpm db:reset
-
-# 查看数据库状态
-pnpm db:status
-
-# 初始化管理员用户
 pnpm init:admin
 ```
 
-## 🔧 部署最佳实践
+`pnpm init:admin` 可重复执行，它用于初始化默认权限、角色和超级管理员。初次登录后应立即更换初始密码。
 
-### 1. 性能优化
+### 4. 发布
 
-- 启用 gzip 压缩
-- 配置 CDN
-- 优化图片和静态资源
-- 使用合适的缓存策略
+将 GitHub 仓库连接到 Vercel 后，推送 `main` 分支即会触发生产构建。每次发布前运行：
 
-### 2. 安全配置
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
 
-- 使用强密码和复杂的 JWT 密钥
-- 配置 HTTPS
-- 设置适当的 CORS 策略
-- 定期更新依赖
+对包含 `drizzle/` 变更的版本，先备份数据库并执行 `pnpm db:push`，再切换生产流量。
 
-### 3. 监控和日志
+## 独立服务器部署
 
-- 配置错误监控（如 Sentry）
-- 设置性能监控
-- 配置日志收集
+`pnpm build` 会生成 Next.js standalone 产物。GitHub Release 中的 `n-admin.zip` 已包含运行时依赖：
 
-## 🚨 常见问题
+```bash
+unzip n-admin.zip -d n-admin
+cd n-admin
+cp .env.example .env
+# 编辑 .env，填入生产配置
+HOSTNAME=0.0.0.0 PORT=3000 node server.js
+```
 
-### 1. 数据库连接失败
+运行 Schema 同步或管理员初始化时，请使用源码仓库和完整开发依赖执行相应的 pnpm 命令。
 
-- 检查 `DATABASE_URL` 是否正确
-- 确认数据库服务已启动
-- 验证网络连接
+## 健康检查
 
-### 2. JWT 认证问题
+发布后至少验证：
 
-- 确认 `JWT_SECRET` 已设置
-- 检查 token 是否过期
-- 验证 token 格式
+1. `/login` 可正常访问并完成登录。
+2. `/dashboard/overview` 可读取统计数据。
+3. 用户、角色、权限和日志页面的读写权限正确。
+4. Vercel Functions 日志中没有数据库 TLS、超时或连接数错误。
+5. 禁用或删除用户后，其现有会话会在下一次请求时失效。
 
-### 3. 构建失败
+## 常见问题
 
-- 检查 Node.js 版本
-- 清理依赖：`rm -rf node_modules && pnpm install`
-- 检查环境变量
+### 数据库连接失败
 
-## 📞 技术支持
+- 确认 Host、Port、Username、Password 和 Database 均为同一个 Cluster 的值。
+- TiDB Cloud 必须启用 `DATABASE_SSL=true`。
+- 检查 Network Access 和 Vercel 出口网络限制。
+- 连接数达到上限时，查看 TiDB Cloud 监控并减少并发请求。
 
-如果在部署过程中遇到问题，请：
+### 登录后立即退出
 
-1. 检查控制台错误信息
-2. 查看应用日志
-3. 确认环境变量配置
-4. 联系技术支持团队
+- 检查所有 Vercel 环境的 `JWT_SECRET` 是否一致。
+- 确认用户未被删除或禁用。
+- 检查浏览器是否允许 HTTPS 站点写入 Cookie。
+
+### Schema 不一致
+
+备份数据库后，使用与当前版本匹配的代码执行 `pnpm db:push`。不要在生产构建命令中每次自动执行 Schema 修改。
