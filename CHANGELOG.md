@@ -4,6 +4,40 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+### [0.4.1](https://github.com/guizimo/n-admin/compare/v0.4.0...v0.4.1) (2026-11-09)
+
+
+### ✨ 新增功能
+
+* **logs:** surface operational statistics ([985c150](https://github.com/guizimo/n-admin/commit/985c150146b3580a6242e6d610525d6e0697ce44))
+
+
+### 🔧 持续集成
+
+* verify changes before release ([5731bca](https://github.com/guizimo/n-admin/commit/5731bca9d2c23f5fb2bc7879c3677b540e067c9b))
+
+
+### ♻️ 代码重构
+
+* **forms:** align management dialogs ([04dca56](https://github.com/guizimo/n-admin/commit/04dca567fbc62a11f37f0a8ba0bf5a419f9de513))
+
+
+### 🐛 Bug 修复
+
+* **auth:** enforce server-side API permissions ([b8c691c](https://github.com/guizimo/n-admin/commit/b8c691c267d2d2011ce1df6c742d20cff418ca17))
+* **ci:** use portable test glob ([28f1c7b](https://github.com/guizimo/n-admin/commit/28f1c7b80874fe5846f05418f95c7b735e9c753c))
+* **data:** enforce admin data integrity ([68157b3](https://github.com/guizimo/n-admin/commit/68157b3667324da55110e49d06c43c739815f922))
+* **deps:** resolve production vulnerabilities ([e5e5959](https://github.com/guizimo/n-admin/commit/e5e5959dd799a6f5db51bbb2a1e46dc9819788a7))
+* **login:** sync displayed release version ([cff294a](https://github.com/guizimo/n-admin/commit/cff294ae67c3f6d0b8454bd801b773b611029823))
+* **security:** harden authentication and dependencies ([aa8d7f8](https://github.com/guizimo/n-admin/commit/aa8d7f8dd114541dda170170175aa87a06faeeb9))
+* **ui:** align responsive dashboard overlays ([7555b87](https://github.com/guizimo/n-admin/commit/7555b87dead6587879e9436536f47ae493e9915d))
+
+
+### 🔨 其他修改
+
+* add Next.js agent guidance ([d404ead](https://github.com/guizimo/n-admin/commit/d404ead97d306b8450949595b2f87fe86d1fe0b6))
+* **release:** align standalone deployment ([15a2355](https://github.com/guizimo/n-admin/commit/15a23552e16d9bcd1903f70e488eb89fdecd781a))
+
 ## [0.4.0](https://github.com/guizimo/n-admin/compare/v0.3.1...v0.4.0) (2026-08-01)
 
 
