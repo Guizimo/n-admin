@@ -4,6 +4,13 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，项目遵循 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+### [0.4.2](https://github.com/guizimo/n-admin/compare/v0.4.1...v0.4.2) (2026-11-09)
+
+
+### 🐛 Bug 修复
+
+* **ci:** avoid duplicate pnpm version ([772d5ba](https://github.com/guizimo/n-admin/commit/772d5ba5ae6bfb37b36756ce5c3f359a90ab8c29))
+
 ### [0.4.1](https://github.com/guizimo/n-admin/compare/v0.4.0...v0.4.1) (2026-11-09)
 
 
