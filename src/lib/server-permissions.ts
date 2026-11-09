@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers';
-import { verifyToken } from './auth';
+import { auth } from './auth';
 import { db } from '@/db';
 import { rolePermissions, permissions, users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -9,15 +8,8 @@ import { eq } from 'drizzle-orm';
  */
 export async function getUserFromRequest(): Promise<number | null> {
   try {
-    const cookieStore = cookies();
-    const token = (await cookieStore).get('token');
-
-    if (!token) {
-      return null;
-    }
-
-    const user = verifyToken(token.value);
-    return user?.id || null;
+    const session = await auth();
+    return session?.user.id || null;
   } catch {
     return null;
   }
@@ -49,6 +41,10 @@ export async function getUserPermissions(userId?: number): Promise<string[]> {
     }
 
     const userInfo = user[0];
+
+    if (userInfo.status !== 'active') {
+      return [];
+    }
 
     // 如果是超级管理员，返回所有权限
     if (userInfo.isSuperAdmin) {

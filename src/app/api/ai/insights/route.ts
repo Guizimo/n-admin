@@ -6,12 +6,9 @@ import {
   systemLogs,
   users
 } from '@/db/schema';
-import { getUserFromRequest } from '@/lib/server-permissions';
-import {
-  errorResponse,
-  successResponse,
-  unauthorizedResponse
-} from '@/service/response';
+import { authorizeApiRequest } from '@/lib/api-authorization';
+import { PERMISSIONS } from '@/lib/permissions';
+import { errorResponse, successResponse } from '@/service/response';
 import type { AiActionDraft, AiInsight, AiInsightsPayload } from '@/types/ai';
 import { and, count, desc, eq, gte, isNull, like, or, sql } from 'drizzle-orm';
 
@@ -66,13 +63,14 @@ function buildActionDrafts(insights: AiInsight[]): AiActionDraft[] {
   }));
 }
 
-export async function GET() {
-  try {
-    const userId = await getUserFromRequest();
-    if (!userId) {
-      return unauthorizedResponse('未授权');
-    }
+export async function GET(request: Request) {
+  const authorization = await authorizeApiRequest(
+    request,
+    PERMISSIONS.LOG.READ
+  );
+  if (!authorization.authorized) return authorization.response;
 
+  try {
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - DAY_MS);
     const sevenDaysAgo = new Date(now.getTime() - 7 * DAY_MS);

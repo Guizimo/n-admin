@@ -8,6 +8,8 @@ type PermissionChecker = (
   userId: number
 ) => Promise<boolean>;
 
+type UserResolver = (request: Request) => Promise<User | null>;
+
 export type AuthorizationResult =
   | { authorized: true; user: User }
   | { authorized: false; response: NextResponse };
@@ -15,9 +17,10 @@ export type AuthorizationResult =
 export async function authorizeApiRequest(
   request: Request,
   permissionCode?: string,
-  permissionChecker: PermissionChecker = hasPermission
+  permissionChecker: PermissionChecker = hasPermission,
+  userResolver: UserResolver = getCurrentUser
 ): Promise<AuthorizationResult> {
-  const user = getCurrentUser(request);
+  const user = await userResolver(request);
 
   if (!user) {
     return {

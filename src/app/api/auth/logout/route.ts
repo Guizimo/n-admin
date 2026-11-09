@@ -25,13 +25,31 @@ export async function POST(request: Request) {
       hasValidToken: !!token
     });
 
-    return successResponse('退出成功');
+    const response = successResponse('退出成功');
+    response.cookies.set('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 0,
+      expires: new Date(0)
+    });
+    return response;
   } catch (error) {
     // 记录登出错误日志
     await logger.error('用户认证', '用户登出', '登出过程发生错误', {
       error: error instanceof Error ? error.message : String(error),
       timestamp: new Date().toISOString()
     });
-    return successResponse('退出成功');
+    const response = successResponse('退出成功');
+    response.cookies.set('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 0,
+      expires: new Date(0)
+    });
+    return response;
   }
 }

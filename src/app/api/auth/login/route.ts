@@ -16,10 +16,21 @@ export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
+    if (
+      typeof email !== 'string' ||
+      typeof password !== 'string' ||
+      !email.trim() ||
+      !password ||
+      email.length > 255 ||
+      password.length > 255
+    ) {
+      return unauthorizedResponse('邮箱或密码错误');
+    }
+
     const user = await db
       .select()
       .from(users)
-      .where(eq(users.email, email))
+      .where(eq(users.email, email.trim().toLowerCase()))
       .limit(1);
 
     if (!user.length) {
@@ -85,7 +96,7 @@ export async function POST(request: Request) {
         username: user[0].username,
         roleId: user[0].roleId,
         avatar: user[0].avatar,
-        isSurperAdmin: user[0].isSuperAdmin
+        isSuperAdmin: user[0].isSuperAdmin
       },
       getJwtSecret(),
       { expiresIn: '1d' }
@@ -109,14 +120,15 @@ export async function POST(request: Request) {
 
     const response = successResponse({
       message: '登录成功',
-      user: { id: user[0].id, email: user[0].email },
-      token
+      user: { id: user[0].id, email: user[0].email }
     });
 
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
+      path: '/',
+      priority: 'high',
       maxAge: 60 * 60 * 24
     });
 

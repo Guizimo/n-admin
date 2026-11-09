@@ -1,5 +1,8 @@
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
+import { eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { users } from '@/db/schema';
 import { getJwtSecret } from '@/lib/jwt';
 
 export interface User {
@@ -14,6 +17,36 @@ export interface Session {
   user: User;
 }
 
+async function resolveActiveUser(token: string): Promise<User | null> {
+  const verified = verifyToken(token);
+  if (!verified) return null;
+
+  const [currentUser] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      avatar: users.avatar,
+      roleId: users.roleId,
+      status: users.status
+    })
+    .from(users)
+    .where(eq(users.id, verified.id))
+    .limit(1);
+
+  if (!currentUser || currentUser.status !== 'active') {
+    return null;
+  }
+
+  return {
+    id: currentUser.id,
+    email: currentUser.email,
+    username: currentUser.username,
+    avatar: currentUser.avatar || '/avatars/default.jpg',
+    roleId: String(currentUser.roleId)
+  };
+}
+
 /**
  * 服务端认证函数 - 只能在服务端组件中使用
  */
@@ -26,16 +59,8 @@ export async function auth(): Promise<Session | null> {
   }
 
   try {
-    const verified = verify(token.value, getJwtSecret()) as User;
-    return {
-      user: {
-        id: verified.id,
-        email: verified.email,
-        username: verified.username,
-        avatar: verified.avatar,
-        roleId: verified.roleId
-      }
-    };
+    const user = await resolveActiveUser(token.value);
+    return user ? { user } : null;
   } catch {
     return null;
   }
@@ -62,13 +87,13 @@ export function verifyToken(token: string): User | null {
 /**
  * 从Request中获取当前用户信息 - 用于API routes
  */
-export function getCurrentUser(request: Request): User | null {
+export async function getCurrentUser(request: Request): Promise<User | null> {
   try {
     const token = request.headers.get('cookie')?.match(/token=([^;]+)/)?.[1];
     if (!token) {
       return null;
     }
-    return verifyToken(token);
+    return await resolveActiveUser(token);
   } catch {
     return null;
   }

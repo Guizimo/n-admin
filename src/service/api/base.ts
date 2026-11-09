@@ -6,6 +6,7 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
 
   const defaultOptions: RequestInit = {
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -15,12 +16,19 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
 
   try {
     const response = await fetch(url, config);
+    const payload = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        payload?.message || `请求失败，状态码：${response.status}`
+      );
     }
 
-    return await response.json();
+    if (payload?.code !== undefined && payload.code !== 0) {
+      throw new Error(payload.message || '请求失败');
+    }
+
+    return payload;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;

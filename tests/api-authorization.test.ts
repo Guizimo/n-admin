@@ -33,7 +33,8 @@ test('rejects authenticated users without the required permission', async () => 
   const result = await authorizeApiRequest(
     authenticatedRequest(),
     'account.user.read',
-    async () => false
+    async () => false,
+    async () => user
   );
 
   assert.equal(result.authorized, false);
@@ -49,7 +50,8 @@ test('returns the authenticated user when permission is granted', async () => {
       assert.equal(permissionCode, 'account.user.read');
       assert.equal(userId, user.id);
       return true;
-    }
+    },
+    async () => user
   );
 
   assert.equal(result.authorized, true);
