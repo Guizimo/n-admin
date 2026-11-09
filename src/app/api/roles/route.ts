@@ -4,6 +4,7 @@ import { like, and, gte, lte, count, eq, sql } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
+import { parsePagination } from '@/lib/api-input';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: Request) {
@@ -18,13 +19,7 @@ export async function GET(request: Request) {
     const name = searchParams.get('name');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-
-    // 验证分页参数
-    const validPage = Math.max(1, page);
-    const validLimit = Math.min(Math.max(1, limit), 100); // 限制最大100条
-    const offset = (validPage - 1) * validLimit;
+    const { page, limit, offset } = parsePagination(searchParams);
 
     // 构建查询条件
     const conditions = [];
@@ -77,16 +72,16 @@ export async function GET(request: Request) {
     const query = whereClause ? baseQuery.where(whereClause) : baseQuery;
 
     const roleList = await query
-      .limit(validLimit)
+      .limit(limit)
       .offset(offset)
       .orderBy(roles.createdAt);
 
     // 计算分页信息
-    const totalPages = Math.ceil(total / validLimit);
+    const totalPages = Math.ceil(total / limit);
 
     return successResponse(roleList, {
-      page: validPage,
-      limit: validLimit,
+      page,
+      limit,
       total,
       totalPages
     });
@@ -109,9 +104,15 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, description } = body;
+    const normalizedName = typeof name === 'string' ? name.trim() : '';
 
     // 验证必填字段
-    if (!name) {
+    if (
+      !normalizedName ||
+      normalizedName.length > 50 ||
+      (description !== undefined &&
+        (typeof description !== 'string' || description.length > 255))
+    ) {
       await logger.warn('创建角色', '创建角色失败：缺少角色名称', {
         operatorId: currentUser?.id,
         operatorName: currentUser?.username
@@ -123,12 +124,12 @@ export async function POST(request: Request) {
     const existingRole = await db
       .select()
       .from(roles)
-      .where(eq(roles.name, name))
+      .where(eq(roles.name, normalizedName))
       .limit(1);
 
     if (existingRole.length > 0) {
       await logger.warn('创建角色', '创建角色失败：角色名已存在', {
-        roleName: name,
+        roleName: normalizedName,
         operatorId: currentUser?.id,
         operatorName: currentUser?.username
       });
@@ -136,13 +137,13 @@ export async function POST(request: Request) {
     }
 
     await db.insert(roles).values({
-      name,
-      description
+      name: normalizedName,
+      description: description?.trim() || null
     });
 
     // 记录创建成功日志
     await logger.info('创建角色', '角色创建成功', {
-      roleName: name,
+      roleName: normalizedName,
       description,
       operatorId: currentUser?.id,
       operatorName: currentUser?.username,

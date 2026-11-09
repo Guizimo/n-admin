@@ -29,6 +29,13 @@
       "when": 1750238385960,
       "tag": "0003_curious_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1794236284955,
+      "tag": "0004_bored_doctor_doom",
+      "breakpoints": true
     }
   ]
 }

@@ -1,10 +1,11 @@
 import { db } from '@/db';
 import { roles, users } from '@/db/schema';
 import bcrypt from 'bcryptjs';
-import { eq, like, and, gte, lte, sql } from 'drizzle-orm';
+import { eq, like, and, gte, lte, or, sql } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
+import { parsePagination } from '@/lib/api-input';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: Request) {
@@ -22,8 +23,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const { page, limit, offset } = parsePagination(searchParams);
 
     // 构建查询条件
     const conditions = [];
@@ -82,8 +82,8 @@ export async function GET(request: Request) {
         ? baseQuery
             .where(and(...conditions))
             .limit(limit)
-            .offset((page - 1) * limit)
-        : baseQuery.limit(limit).offset((page - 1) * limit),
+            .offset(offset)
+        : baseQuery.limit(limit).offset(offset),
       conditions.length > 0 ? countQuery.where(and(...conditions)) : countQuery
     ]);
 
@@ -114,14 +114,27 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { username, email, password, roleId, status = 'active' } = body;
+    const normalizedUsername =
+      typeof username === 'string' ? username.trim() : '';
+    const normalizedEmail =
+      typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const normalizedRoleId = Number(roleId);
 
     // 验证必填字段
-    if (!username || !email || !password) {
+    if (
+      !normalizedUsername ||
+      !normalizedEmail ||
+      typeof password !== 'string' ||
+      !password ||
+      !Number.isInteger(normalizedRoleId) ||
+      normalizedRoleId <= 0
+    ) {
       await logger.warn('创建用户', '创建用户失败：缺少必填字段', {
         missingFields: {
-          username: !username,
-          email: !email,
-          password: !password
+          username: !normalizedUsername,
+          email: !normalizedEmail,
+          password: !password,
+          roleId: !Number.isInteger(normalizedRoleId) || normalizedRoleId <= 0
         },
         operatorId: currentUser?.id,
         operatorName: currentUser?.username
@@ -130,22 +143,47 @@ export async function POST(request: Request) {
       return errorResponse('请填写所有必填字段');
     }
 
+    if (
+      normalizedUsername.length > 50 ||
+      normalizedEmail.length > 255 ||
+      password.length < 8 ||
+      password.length > 255 ||
+      !['active', 'disabled'].includes(status)
+    ) {
+      return errorResponse('用户信息格式无效');
+    }
+
     // 检查用户名或邮箱是否已存在
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.username, username))
+      .where(
+        or(
+          eq(users.username, normalizedUsername),
+          eq(users.email, normalizedEmail)
+        )
+      )
       .limit(1);
 
     if (existingUser.length > 0) {
       await logger.warn('创建用户', '创建用户失败：用户名已存在', {
-        username,
-        email,
+        username: normalizedUsername,
+        email: normalizedEmail,
         operatorId: currentUser?.id,
         operatorName: currentUser?.username
       });
 
-      return errorResponse('用户名已存在');
+      return errorResponse('用户名或邮箱已存在');
+    }
+
+    const [targetRole] = await db
+      .select({ id: roles.id })
+      .from(roles)
+      .where(eq(roles.id, normalizedRoleId))
+      .limit(1);
+
+    if (!targetRole) {
+      return errorResponse('所选角色不存在');
     }
 
     // 加密密码
@@ -154,19 +192,19 @@ export async function POST(request: Request) {
 
     // 创建用户
     await db.insert(users).values({
-      username,
-      email,
+      username: normalizedUsername,
+      email: normalizedEmail,
       password: hashedPassword,
-      roleId,
+      roleId: normalizedRoleId,
       status,
       avatar: `/avatars/default.jpg`
     });
 
     // 记录成功日志
     await logger.info('创建用户', '用户创建成功', {
-      username,
-      email,
-      roleId,
+      username: normalizedUsername,
+      email: normalizedEmail,
+      roleId: normalizedRoleId,
       operatorId: currentUser?.id,
       operatorName: currentUser?.username,
       timestamp: new Date().toISOString()

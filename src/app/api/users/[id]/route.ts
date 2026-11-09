@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { users } from '@/db/schema';
+import { roles, users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import {
@@ -32,6 +32,10 @@ export async function PUT(
     const { id: idStr } = await params;
     const id = parseInt(idStr);
 
+    if (!Number.isInteger(id) || id <= 0) {
+      return errorResponse('用户 ID 无效');
+    }
+
     // 获取原用户信息
     const originalUser = await db
       .select()
@@ -50,6 +54,37 @@ export async function PUT(
 
     const body = await request.json();
     const { username, email, password, roleId, status } = body;
+    const normalizedRoleId = roleId === undefined ? undefined : Number(roleId);
+
+    if (
+      (username !== undefined &&
+        (typeof username !== 'string' ||
+          !username.trim() ||
+          username.length > 50)) ||
+      (email !== undefined &&
+        (typeof email !== 'string' || !email.trim() || email.length > 255)) ||
+      (password !== undefined &&
+        (typeof password !== 'string' ||
+          (password.length > 0 && password.length < 8) ||
+          password.length > 255)) ||
+      (status !== undefined && !['active', 'disabled'].includes(status)) ||
+      (normalizedRoleId !== undefined &&
+        (!Number.isInteger(normalizedRoleId) || normalizedRoleId <= 0))
+    ) {
+      return errorResponse('用户信息格式无效');
+    }
+
+    if (normalizedRoleId !== undefined) {
+      const [targetRole] = await db
+        .select({ id: roles.id })
+        .from(roles)
+        .where(eq(roles.id, normalizedRoleId))
+        .limit(1);
+
+      if (!targetRole) {
+        return errorResponse('所选角色不存在');
+      }
+    }
 
     // 检查是否尝试禁用超级管理员
     if (status !== undefined) {
@@ -66,12 +101,12 @@ export async function PUT(
       await preventSuperAdminModification(id);
     }
 
-    const updateData: any = {};
+    const updateData: Partial<typeof users.$inferInsert> = {};
 
     // 只更新提供的字段
-    if (username !== undefined) updateData.username = username;
-    if (email !== undefined) updateData.email = email;
-    if (roleId !== undefined) updateData.roleId = roleId;
+    if (username !== undefined) updateData.username = username.trim();
+    if (email !== undefined) updateData.email = email.trim().toLowerCase();
+    if (normalizedRoleId !== undefined) updateData.roleId = normalizedRoleId;
     if (status !== undefined) updateData.status = status;
 
     // 只有在提供新密码时才更新密码
@@ -96,8 +131,9 @@ export async function PUT(
             ? { from: originalUser[0].email, to: email }
             : undefined,
         roleId:
-          roleId !== undefined && originalUser[0].roleId !== roleId
-            ? { from: originalUser[0].roleId, to: roleId }
+          normalizedRoleId !== undefined &&
+          originalUser[0].roleId !== normalizedRoleId
+            ? { from: originalUser[0].roleId, to: normalizedRoleId }
             : undefined,
         status:
           status !== undefined && originalUser[0].status !== status

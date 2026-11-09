@@ -3,6 +3,7 @@ import { permissions } from '@/db/schema';
 import { like, and, gte, lte, count } from 'drizzle-orm';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
+import { parsePagination } from '@/lib/api-input';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: Request) {
@@ -19,13 +20,7 @@ export async function GET(request: Request) {
     const description = searchParams.get('description');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-
-    // 验证分页参数
-    const validPage = Math.max(1, page);
-    const validLimit = Math.min(Math.max(1, limit), 100); // 限制最大100条
-    const offset = (validPage - 1) * validLimit;
+    const { page, limit, offset } = parsePagination(searchParams);
 
     // 构建查询条件
     const conditions = [];
@@ -78,16 +73,16 @@ export async function GET(request: Request) {
     const query = whereClause ? baseQuery.where(whereClause) : baseQuery;
 
     const permissionList = await query
-      .limit(validLimit)
+      .limit(limit)
       .offset(offset)
       .orderBy(permissions.createdAt);
 
     // 计算分页信息
-    const totalPages = Math.ceil(total / validLimit);
+    const totalPages = Math.ceil(total / limit);
 
     return successResponse(permissionList, {
-      page: validPage,
-      limit: validLimit,
+      page,
+      limit,
       total,
       totalPages
     });
@@ -108,10 +103,23 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, code, description } = body;
 
+    if (
+      typeof name !== 'string' ||
+      typeof code !== 'string' ||
+      !name.trim() ||
+      !code.trim() ||
+      name.length > 50 ||
+      code.length > 100 ||
+      (description !== undefined &&
+        (typeof description !== 'string' || description.length > 255))
+    ) {
+      return errorResponse('权限信息格式无效');
+    }
+
     await db.insert(permissions).values({
-      name,
-      code,
-      description
+      name: name.trim(),
+      code: code.trim(),
+      description: description?.trim() || null
     });
 
     return successResponse({ message: '权限创建成功' });

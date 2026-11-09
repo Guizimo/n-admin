@@ -1,7 +1,7 @@
 import { db } from '@/db';
-import { roles } from '@/db/schema';
+import { rolePermissions, roles, users } from '@/db/schema';
 import { preventSuperRoleModification } from '@/lib/super-admin';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
@@ -43,8 +43,34 @@ export async function PUT(
     await preventSuperRoleModification(id);
     const body = await request.json();
     const { name, description } = body;
+    const normalizedName = typeof name === 'string' ? name.trim() : '';
 
-    await db.update(roles).set({ name, description }).where(eq(roles.id, id));
+    if (
+      !normalizedName ||
+      normalizedName.length > 50 ||
+      (description !== undefined &&
+        (typeof description !== 'string' || description.length > 255))
+    ) {
+      return errorResponse('角色信息格式无效');
+    }
+
+    const [duplicateRole] = await db
+      .select({ id: roles.id })
+      .from(roles)
+      .where(and(eq(roles.name, normalizedName), ne(roles.id, id)))
+      .limit(1);
+
+    if (duplicateRole) {
+      return errorResponse('角色名已存在');
+    }
+
+    await db
+      .update(roles)
+      .set({
+        name: normalizedName,
+        description: description?.trim() || null
+      })
+      .where(eq(roles.id, id));
 
     // 记录更新日志
     await logger.info('更新角色', '角色信息更新成功', {
@@ -112,7 +138,21 @@ export async function DELETE(
     }
 
     await preventSuperRoleModification(id);
-    await db.delete(roles).where(eq(roles.id, id));
+
+    const [assignedUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.roleId, id))
+      .limit(1);
+
+    if (assignedUser) {
+      return errorResponse('该角色仍有关联用户，请先调整用户角色');
+    }
+
+    await db.transaction(async (tx) => {
+      await tx.delete(rolePermissions).where(eq(rolePermissions.roleId, id));
+      await tx.delete(roles).where(eq(roles.id, id));
+    });
 
     // 记录删除日志
     await logger.warn('删除角色', '角色删除成功', {

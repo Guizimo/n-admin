@@ -4,6 +4,7 @@ import { systemLogs, users } from '@/db/schema';
 import { desc, eq, like, and, gte, lte, count } from 'drizzle-orm';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
+import { parsePagination } from '@/lib/api-input';
 import { successResponse, errorResponse } from '@/service/response';
 
 export async function GET(request: NextRequest) {
@@ -15,8 +16,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const { page, limit, offset } = parsePagination(searchParams);
     const level = searchParams.get('level');
     const module = searchParams.get('module');
     const action = searchParams.get('action');
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
       .where(whereClause)
       .orderBy(desc(systemLogs.createdAt))
       .limit(limit)
-      .offset((page - 1) * limit);
+      .offset(offset);
 
     return successResponse(logs, {
       page,

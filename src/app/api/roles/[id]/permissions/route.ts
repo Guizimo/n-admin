@@ -1,9 +1,10 @@
 import { db } from '@/db';
 import { rolePermissions, permissions, roles } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { Logger } from '@/lib/logger';
 import { authorizeApiRequest } from '@/lib/api-authorization';
 import { PERMISSIONS } from '@/lib/permissions';
+import { preventSuperRoleModification } from '@/lib/super-admin';
 import { errorResponse, successResponse } from '@/service/response';
 
 // 获取角色的权限列表
@@ -57,6 +58,27 @@ export async function PUT(
     const { permissionIds } = await request.json();
     const roleId = parseInt(id);
 
+    if (!Number.isInteger(roleId) || roleId <= 0) {
+      return errorResponse('角色 ID 无效');
+    }
+
+    if (!Array.isArray(permissionIds)) {
+      return errorResponse('权限列表格式无效');
+    }
+
+    const normalizedPermissionIds = [
+      ...new Set(
+        permissionIds.filter(
+          (permissionId): permissionId is number =>
+            Number.isInteger(permissionId) && permissionId > 0
+        )
+      )
+    ];
+
+    if (normalizedPermissionIds.length !== permissionIds.length) {
+      return errorResponse('权限列表包含无效或重复项');
+    }
+
     // 获取角色信息
     const targetRole = await db
       .select()
@@ -73,6 +95,8 @@ export async function PUT(
       return errorResponse('角色不存在');
     }
 
+    await preventSuperRoleModification(roleId);
+
     // 获取原有权限用于对比
     const originalPermissions = await db
       .select({
@@ -87,14 +111,17 @@ export async function PUT(
       (p) => p.permissionId
     );
 
-    // 获取新权限信息
-    const newPermissions =
-      permissionIds.length > 0
+    const validPermissions =
+      normalizedPermissionIds.length > 0
         ? await db
-            .select({ id: permissions.id, code: permissions.code })
+            .select({ id: permissions.id })
             .from(permissions)
-            .where(eq(permissions.id, permissionIds[0])) // 这里简化处理，实际应该用IN查询
+            .where(inArray(permissions.id, normalizedPermissionIds))
         : [];
+
+    if (validPermissions.length !== normalizedPermissionIds.length) {
+      return errorResponse('权限列表包含不存在的权限');
+    }
 
     // 开启事务
     await db.transaction(async (tx) => {
@@ -104,9 +131,9 @@ export async function PUT(
         .where(eq(rolePermissions.roleId, roleId));
 
       // 添加新权限
-      if (permissionIds.length > 0) {
+      if (normalizedPermissionIds.length > 0) {
         await tx.insert(rolePermissions).values(
-          permissionIds.map((permissionId: number) => ({
+          normalizedPermissionIds.map((permissionId) => ({
             roleId,
             permissionId
           }))
@@ -119,12 +146,12 @@ export async function PUT(
       targetRoleId: roleId,
       targetRoleName: targetRole[0].name,
       originalPermissions: originalPermissionIds,
-      newPermissions: permissionIds,
-      addedPermissions: permissionIds.filter(
+      newPermissions: normalizedPermissionIds,
+      addedPermissions: normalizedPermissionIds.filter(
         (id: number) => !originalPermissionIds.includes(id)
       ),
       removedPermissions: originalPermissionIds.filter(
-        (id) => !permissionIds.includes(id)
+        (id) => !normalizedPermissionIds.includes(id)
       ),
       operatorId: currentUser?.id,
       operatorName: currentUser?.username,
